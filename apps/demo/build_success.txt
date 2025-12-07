@@ -1,0 +1,611 @@
+
+> demo@0.1.0 build
+> next build
+
+   ▲ Next.js 15.4.2
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ⚠ Compiled with warnings in 4.0s
+
+./src/components/LiveAvatarSession.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/components/LiveAvatarSession.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'ConnectionQuality' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'ConnectionQuality').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'ConnectionQuality' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'ConnectionQuality').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'LiveAvatarSession' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'LiveAvatarSession').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/useVoiceChat.ts
+Attempted import error: 'VoiceChatState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatState').
+
+Import trace for requested module:
+./src/liveavatar/useVoiceChat.ts
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/useVoiceChat.ts
+Attempted import error: 'VoiceChatState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatState').
+
+Import trace for requested module:
+./src/liveavatar/useVoiceChat.ts
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/components/LiveAvatarSession.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/components/LiveAvatarSession.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'ConnectionQuality' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'ConnectionQuality').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'ConnectionQuality' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'ConnectionQuality').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'SessionEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'SessionEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatState').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'VoiceChatEvent' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatEvent').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'AgentEventsEnum' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'AgentEventsEnum').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/context.tsx
+Attempted import error: 'LiveAvatarSession' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'LiveAvatarSession').
+
+Import trace for requested module:
+./src/liveavatar/context.tsx
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/useVoiceChat.ts
+Attempted import error: 'VoiceChatState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatState').
+
+Import trace for requested module:
+./src/liveavatar/useVoiceChat.ts
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+./src/liveavatar/useVoiceChat.ts
+Attempted import error: 'VoiceChatState' is not exported from '@heygen/liveavatar-web-sdk' (imported as 'VoiceChatState').
+
+Import trace for requested module:
+./src/liveavatar/useVoiceChat.ts
+./src/liveavatar/index.ts
+./src/components/LiveAvatarSession.tsx
+./src/components/LiveAvatarDemo.tsx
+./app/page.tsx
+
+   Linting and checking validity of types ...
+
+./app/api/secrets.ts
+12:35  Warning: ELEVENLABS_API_KEY is not listed as a dependency in turbo.json  turbo/no-undeclared-env-vars
+13:31  Warning: OPENAI_API_KEY is not listed as a dependency in turbo.json  turbo/no-undeclared-env-vars
+
+./app/api/start-session/route.ts
+45:16  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/LiveAvatarDemo.tsx
+71:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/LiveAvatarSession.tsx
+3:36  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+10:24  Warning: 'VoiceChatState' is defined but never used.  @typescript-eslint/no-unused-vars
+18:9  Warning: 'mode' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/liveavatar/context.tsx
+155:52  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+198:48  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/11) ...
+   Generating static pages (2/11) 
+   Generating static pages (5/11) 
+   Generating static pages (8/11) 
+ ✓ Generating static pages (11/11)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    1.27 kB         101 kB
+├ ○ /_not-found                            988 B         101 kB
+├ ƒ /api/elevenlabs-text-to-speech         137 B         100 kB
+├ ƒ /api/keep-session-alive                137 B         100 kB
+├ ƒ /api/openai-chat-complete              137 B         100 kB
+├ ƒ /api/start-custom-session              137 B         100 kB
+├ ƒ /api/start-session                     137 B         100 kB
+└ ƒ /api/stop-session                      137 B         100 kB
++ First Load JS shared by all             100 kB
+  ├ chunks/330-bc25180efda06559.js         44 kB
+  ├ chunks/f100e438-f2e2e07420891694.js  54.1 kB
+  └ other shared chunks (total)          2.01 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

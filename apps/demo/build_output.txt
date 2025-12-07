@@ -1,0 +1,29 @@
+
+> demo@0.1.0 build
+> next build
+
+   ▲ Next.js 15.4.2
+   - Environments: .env
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./app/page.tsx
+Error:   [31mx[0m `ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+   ,-[[36;1;4mC:\Users\LENOVO\Desktop\Kilo_Code\liveavatar-web-sdk-master\apps\demo\app\page.tsx[0m:3:1]
+ [2m1[0m |     import dynamic from "next/dynamic";
+ [2m2[0m |     
+ [2m3[0m | [35;1m,[0m[35;1m-[0m[35;1m>[0m const LiveAvatarDemo = dynamic(
+ [2m4[0m | [35;1m|[0m     () => import("../src/components/LiveAvatarDemo").then((mod) => mod.LiveAvatarDemo),
+ [2m5[0m | [35;1m|[0m     { ssr: false }
+ [2m6[0m | [35;1m`[0m[35;1m-[0m[35;1m>[0m );
+ [2m7[0m |     
+ [2m8[0m |     export default function Home() {
+ [2m9[0m |       return <LiveAvatarDemo />;
+   `----
+
+Import trace for requested module:
+./app/page.tsx
+
+
+> Build failed because of webpack errors

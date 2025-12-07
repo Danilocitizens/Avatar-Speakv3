@@ -9,5 +9,5 @@ export const VOICE_ID = process.env.HEYGEN_VOICE_ID || "";
 export const LANGUAGE = process.env.HEYGEN_LANGUAGE || "";
 
 // CUSTOM MODE Customizations
-//export const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || "";
-//export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+export const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || "";
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
