@@ -1,9 +1,17 @@
-import { OPENAI_API_KEY } from "../secrets";
+// import { OPENAI_API_KEY } from "../secrets";
 
+/*
 const SYSTEM_PROMPT =
   "You are a helpful assistant. You are being used in a demo. Please act courteously and helpfully.";
+*/
 
 export async function POST(request: Request) {
+  return new Response(JSON.stringify({ error: "OpenAI integration disabled" }), {
+    status: 503,
+    headers: { "Content-Type": "application/json" }
+  });
+
+  /*
   try {
     const body = await request.json();
     const {
@@ -87,4 +95,5 @@ export async function POST(request: Request) {
       },
     );
   }
+  */
 }
