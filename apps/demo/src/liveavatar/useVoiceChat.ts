@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useLiveAvatarContext } from "./context";
-import { VoiceChatState } from "@heygen/liveavatar-web-sdk";
+import { VoiceChatState } from "../types/sdk";
 
 export const useVoiceChat = () => {
   const {

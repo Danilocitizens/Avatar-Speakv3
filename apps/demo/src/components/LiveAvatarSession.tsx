@@ -7,7 +7,7 @@ import {
   useVoiceChat,
   useChatHistory,
 } from "../liveavatar";
-import { SessionState, VoiceChatState } from "@heygen/liveavatar-web-sdk";
+import { SessionState, VoiceChatState } from "../types/sdk";
 import { TargetIcon } from "./Icons";
 
 
