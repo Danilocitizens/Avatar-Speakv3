@@ -7,7 +7,7 @@
     "HEYGEN_VOICE_ID",
     "HEYGEN_LANGUAGE"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": [
         "^build"
