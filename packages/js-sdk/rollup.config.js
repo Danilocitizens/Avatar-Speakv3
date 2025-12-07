@@ -11,6 +11,7 @@ export default [
       {
         file: "lib/index.cjs.js",
         format: "cjs",
+        exports: "named",
       },
       {
         file: "lib/index.esm.js",

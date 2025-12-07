@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { LiveAvatarSession } from "@heygen/liveavatar-web-sdk";
 import {
   ConnectionQuality,
+  LiveAvatarSession,
   SessionState,
   SessionEvent,
   VoiceChatEvent,
   VoiceChatState,
   AgentEventsEnum,
-} from "../types/sdk";
+} from "@heygen/liveavatar-web-sdk";
 import { LiveAvatarSessionMessage, MessageSender } from "./types";
 import { API_URL } from "../../app/api/secrets";
 
