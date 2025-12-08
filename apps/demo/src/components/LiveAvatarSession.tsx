@@ -15,7 +15,8 @@ import { TargetIcon } from "./Icons";
 const LiveAvatarSessionComponent: React.FC<{
   mode: "FULL" | "CUSTOM";
   onSessionStopped: () => void;
-}> = ({ mode, onSessionStopped }) => {
+  onSessionComplete?: () => void;
+}> = ({ mode, onSessionStopped, onSessionComplete }) => {
   const {
     sessionState,
     isStreamReady,
@@ -102,7 +103,11 @@ const LiveAvatarSessionComponent: React.FC<{
             className="absolute top-6 right-6 bg-red-500/80 hover:bg-red-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg"
             onClick={() => {
               stopSession();
-              window.open("https://wa.me/+56950164862", "_blank");
+              if (onSessionComplete) {
+                onSessionComplete();
+              } else {
+                window.open("https://wa.me/+56950164862", "_blank");
+              }
             }}
           >
             Finalizar
@@ -164,6 +169,7 @@ export const LiveAvatarSession: React.FC<{
       <LiveAvatarSessionComponent
         mode={mode}
         onSessionStopped={onSessionStopped}
+        onSessionComplete={onSessionComplete}
       />
     </LiveAvatarContextProvider>
   );
