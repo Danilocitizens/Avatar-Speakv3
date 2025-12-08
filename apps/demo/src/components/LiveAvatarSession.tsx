@@ -181,6 +181,7 @@ export const LiveAvatarSession: React.FC<{
         mode={mode}
         onSessionStopped={onSessionStopped}
         onSessionComplete={onSessionComplete}
+        idInteraction={idInteraction}
       />
     </LiveAvatarContextProvider>
   );
