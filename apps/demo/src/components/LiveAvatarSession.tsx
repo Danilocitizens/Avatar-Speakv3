@@ -16,7 +16,8 @@ const LiveAvatarSessionComponent: React.FC<{
   mode: "FULL" | "CUSTOM";
   onSessionStopped: () => void;
   onSessionComplete?: () => void;
-}> = ({ mode, onSessionStopped, onSessionComplete }) => {
+  idInteraction: string;
+}> = ({ mode, onSessionStopped, onSessionComplete, idInteraction }) => {
   const {
     sessionState,
     isStreamReady,
@@ -107,7 +108,7 @@ const LiveAvatarSessionComponent: React.FC<{
                 await fetch("https://devwebhook.inteliventa.ai/webhook/liveavatar", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ Estado: "Terminar ejercicio" })
+                  body: JSON.stringify({ Estado: "Terminar ejercicio", id_interaccion: idInteraction })
                 });
               } catch (e) {
                 console.error("Webhook error:", e);
