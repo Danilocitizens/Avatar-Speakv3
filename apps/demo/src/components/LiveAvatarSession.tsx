@@ -29,11 +29,12 @@ const LiveAvatarSessionComponent: React.FC<{
   } = useVoiceChat();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    if (sessionState === SessionState.DISCONNECTED) {
-      onSessionStopped();
-    }
-  }, [sessionState, onSessionStopped]);
+  // Removed auto-redirect on DISCONNECTED to allow user to see error state
+  // useEffect(() => {
+  //   if (sessionState === SessionState.DISCONNECTED) {
+  //     onSessionStopped();
+  //   }
+  // }, [sessionState, onSessionStopped]);
 
   useEffect(() => {
     if (isStreamReady && videoRef.current) {
@@ -43,7 +44,7 @@ const LiveAvatarSessionComponent: React.FC<{
 
   useEffect(() => {
     if (sessionState === SessionState.INACTIVE) {
-      startSession();
+      startSession().catch(console.error);
     }
   }, [startSession, sessionState]);
 
@@ -76,6 +77,24 @@ const LiveAvatarSessionComponent: React.FC<{
             playsInline
             className="w-full h-full object-cover"
           />
+          {sessionState === SessionState.DISCONNECTED && (
+            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md text-white p-6">
+              <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 9V14" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M12 17.01L12.01 16.9989" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Sesión Finalizada</h3>
+              <p className="text-white/60 mb-6 text-center max-w-xs">La conexión se ha perdido o no se pudo establecer.</p>
+              <button
+                onClick={onSessionStopped}
+                className="px-6 py-2 bg-white text-black font-semibold rounded-full hover:bg-gray-100 transition-colors"
+              >
+                Volver al Inicio
+              </button>
+            </div>
+          )}
           <button
             className="absolute top-6 right-6 bg-red-500/80 hover:bg-red-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg"
             onClick={() => {
