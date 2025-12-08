@@ -29,12 +29,15 @@ const LiveAvatarSessionComponent: React.FC<{
   } = useVoiceChat();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Removed auto-redirect on DISCONNECTED to allow user to see error state
-  // useEffect(() => {
-  //   if (sessionState === SessionState.DISCONNECTED) {
-  //     onSessionStopped();
-  //   }
-  // }, [sessionState, onSessionStopped]);
+  useEffect(() => {
+    console.log("[UI] sessionState changed:", sessionState);
+    // Removed auto-redirect on DISCONNECTED to allow user to see error state
+    // useEffect(() => {
+    //   if (sessionState === SessionState.DISCONNECTED) {
+    //     onSessionStopped();
+    //   }
+    // }, [sessionState, onSessionStopped]);
+  }, [sessionState]);
 
   useEffect(() => {
     if (isStreamReady && videoRef.current) {

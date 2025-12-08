@@ -21,7 +21,7 @@ export class SessionAPIClient {
 
   constructor(sessionToken: string, apiUrl: string = API_URL) {
     this.sessionToken = sessionToken;
-    this.apiUrl = apiUrl ?? API_URL;
+    this.apiUrl = (apiUrl && apiUrl !== "") ? apiUrl : API_URL;
   }
 
   private async request<T = any>(
@@ -43,7 +43,7 @@ export class SessionAPIClient {
         const data = await response.json();
         throw new SessionApiError(
           data.data?.message ||
-            `API request failed with status ${response.status}`,
+          `API request failed with status ${response.status}`,
           data.code,
           response.status,
         );

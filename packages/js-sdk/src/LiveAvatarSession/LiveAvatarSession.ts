@@ -75,8 +75,8 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
     this.room = new Room({
       adaptiveStream: supportsAdaptiveStream()
         ? {
-            pauseVideoInBackground: false,
-          }
+          pauseVideoInBackground: false,
+        }
         : false,
       dynacast: supportsDynacast(),
       videoCaptureDefaults: {
@@ -103,38 +103,51 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
   }
 
   public async start(): Promise<void> {
+    console.log("[SDK] start() called. Current state:", this.state);
     if (this.state !== SessionState.INACTIVE) {
-      console.warn("Session is already started");
+      console.warn("[SDK] Session is already started or active");
       return;
     }
 
     try {
       this.state = SessionState.CONNECTING;
+      console.log("[SDK] State set to CONNECTING");
 
+      console.log("[SDK] Calling sessionClient.startSession()...");
       this._sessionInfo = await this.sessionClient.startSession();
+      console.log("[SDK] sessionClient.startSession() success. Info:", this._sessionInfo);
+
       const livekitRoomUrl = this._sessionInfo.livekit_url;
       const livekitClientToken = this._sessionInfo.livekit_client_token;
       const websocketUrl = this._sessionInfo.ws_url;
 
       // Connect to LiveKit room if provided
       if (livekitRoomUrl && livekitClientToken) {
+        console.log("[SDK] Connecting to LiveKit Room...");
         // Track the different events from the room, server, and websocket
         this.trackEvents();
         await this.room.connect(livekitRoomUrl, livekitClientToken);
+        console.log("[SDK] LiveKit Room connected.");
         this.connectionQualityIndicator.start(this.room);
+      } else {
+        console.warn("[SDK] No LiveKit URL or Token provided.");
       }
 
       // Connect to WebSocket if provided
       if (websocketUrl) {
+        console.log("[SDK] Connecting to WebSocket...", websocketUrl);
         await this.connectWebSocket(websocketUrl);
+        console.log("[SDK] WebSocket connected.");
         this.setupWebSocketManagement();
       }
 
       // Run configurations as needed
+      console.log("[SDK] Configuring session...");
       await this.configureSession();
       this.state = SessionState.CONNECTED;
+      console.log("[SDK] Session State set to CONNECTED");
     } catch (error) {
-      console.error("Session start failed:", error);
+      console.error("[SDK] Session start failed CAUGHT ERROR:", error);
       this.cleanup();
       this.postStop(SessionDisconnectReason.SESSION_START_FAILED);
       throw error;
@@ -309,7 +322,8 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
       }
     });
 
-    this.room.on(RoomEvent.Disconnected, () => {
+    this.room.on(RoomEvent.Disconnected, (reason) => {
+      console.warn("[SDK] RoomEvent.Disconnected received:", reason);
       this.handleRoomDisconnect();
     });
   }
