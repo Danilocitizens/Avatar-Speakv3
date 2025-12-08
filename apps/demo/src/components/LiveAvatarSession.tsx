@@ -101,7 +101,17 @@ const LiveAvatarSessionComponent: React.FC<{
           )}
           <button
             className="absolute top-6 right-6 bg-red-500/80 hover:bg-red-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg"
-            onClick={() => {
+            onClick={async () => {
+              // Send webhook notification for manual termination
+              try {
+                await fetch("https://devwebhook.inteliventa.ai/webhook/liveavatar", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ Estado: "Terminar ejercicio" })
+                });
+              } catch (e) {
+                console.error("Webhook error:", e);
+              }
               stopSession();
               if (onSessionComplete) {
                 onSessionComplete();
