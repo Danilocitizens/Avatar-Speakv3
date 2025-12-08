@@ -110,7 +110,7 @@ const LiveAvatarSessionComponent: React.FC<{
               }
             }}
           >
-            Finalizar
+            Terminar ejercicio
           </button>
         </div>
       </div>
