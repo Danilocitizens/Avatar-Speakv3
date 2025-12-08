@@ -115,12 +115,11 @@ const LiveAvatarDemoContent = () => {
                     ENTRENADOR AI
                   </h1>
                 </div>
-                <button
-                  onClick={() => window.open("https://wa.me/+56950164862", "_blank")}
-                  className="px-8 py-3 rounded-lg font-semibold text-white transition-all duration-200 hover:scale-105 active:scale-95 bg-green-600 border border-green-400 shadow-[0_0_20px_rgba(37,235,99,0.5)]"
-                >
-                  Volver a WhatsApp
-                </button>
+                <div className="bg-white/10 px-8 py-6 rounded-xl border border-white/5 backdrop-blur-md">
+                  <p className="text-xl text-white font-medium text-center leading-relaxed">
+                    Gracias. Ahora vuelve a WhatsApp para continuar
+                  </p>
+                </div>
               </>
             ) : showNoExerciseScreen ? (
               <>
