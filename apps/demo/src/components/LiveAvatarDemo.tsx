@@ -124,12 +124,7 @@ const LiveAvatarDemoContent = () => {
             ) : showNoExerciseScreen ? (
               <>
                 <h2 className="text-2xl font-bold text-white text-center">Todavía no tienes un ejercicio</h2>
-                <button
-                  onClick={() => window.open("https://wa.me/+56950164862", "_blank")}
-                  className="px-8 py-3 rounded-lg font-semibold text-white transition-all duration-200 hover:scale-105 active:scale-95 bg-green-600 border border-green-400 shadow-[0_0_20px_rgba(37,235,99,0.5)]"
-                >
-                  Volver a WhatsApp
-                </button>
+                <p className="text-lg text-white/70 text-center">Puedes volver a WhatsApp para continuar</p>
               </>
             ) : (
               <>
