@@ -109,45 +109,44 @@ const LiveAvatarDemoContent = () => {
       }}
     >
       {!sessionToken ? (
-        <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4">
+        <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4 md:px-8">
           {/* Card Container */}
           <div
-            className="w-full rounded-2xl p-12 flex flex-col items-center justify-center gap-8"
+            className="w-full rounded-2xl p-6 md:p-12 flex flex-col items-center justify-center gap-6 md:gap-8"
             style={{
               background: "rgba(255, 255, 255, 0.05)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
               backdropFilter: "blur(10px)",
-              minHeight: "400px",
             }}
           >
             {showEndScreen ? (
               <>
-                <div className="flex items-center gap-3 mb-4">
-                  <h1 className="text-white text-3xl font-bold tracking-wide">
+                <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-4">
+                  <h1 className="text-white text-xl md:text-3xl font-bold tracking-wide">
                     ENTRENADOR AI
                   </h1>
                 </div>
-                <div className="bg-white/10 px-8 py-6 rounded-xl border border-white/5 backdrop-blur-md">
-                  <p className="text-xl text-white font-medium text-center leading-relaxed">
+                <div className="bg-white/10 px-6 md:px-8 py-4 md:py-6 rounded-xl border border-white/5 backdrop-blur-md">
+                  <p className="text-base md:text-xl text-white font-medium text-center leading-relaxed">
                     Gracias. Ahora vuelve a WhatsApp para continuar
                   </p>
                 </div>
               </>
             ) : showNoExerciseScreen ? (
               <>
-                <h2 className="text-2xl font-bold text-white text-center">
+                <h2 className="text-xl md:text-2xl font-bold text-white text-center">
                   Todavía no tienes un ejercicio
                 </h2>
-                <p className="text-lg text-white/70 text-center">
+                <p className="text-base md:text-lg text-white/70 text-center">
                   Puedes volver a WhatsApp para continuar
                 </p>
               </>
             ) : (
               <>
                 {/* Header with Icon and Title */}
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-4">
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center"
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center"
                     style={{
                       background:
                         "linear-gradient(135deg, #FF1493 0%, #FF69B4 100%)",
@@ -155,8 +154,7 @@ const LiveAvatarDemoContent = () => {
                     }}
                   >
                     <svg
-                      width="24"
-                      height="24"
+                      className="w-5 h-5 md:w-6 md:h-6"
                       viewBox="0 0 24 24"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
@@ -171,14 +169,14 @@ const LiveAvatarDemoContent = () => {
                       <circle cx="12" cy="12" r="3" fill="white" />
                     </svg>
                   </div>
-                  <h1 className="text-white text-3xl font-bold tracking-wide">
+                  <h1 className="text-white text-xl md:text-3xl font-bold tracking-wide">
                     ENTRENADOR AI
                   </h1>
                 </div>
 
                 {/* Error Message */}
                 {error && (
-                  <div className="text-red-400 bg-red-900/30 px-6 py-3 rounded-lg border border-red-500/50">
+                  <div className="text-red-400 bg-red-900/30 px-4 md:px-6 py-2 md:py-3 rounded-lg border border-red-500/50 text-sm md:text-base">
                     {error}
                   </div>
                 )}
@@ -187,7 +185,7 @@ const LiveAvatarDemoContent = () => {
                 {!isStarting ? (
                   <button
                     onClick={handleStart}
-                    className="px-8 py-3 rounded-lg font-semibold text-white transition-all duration-200 hover:scale-105 active:scale-95"
+                    className="min-h-[48px] px-6 md:px-8 py-3 rounded-lg font-semibold text-white transition-all duration-200 hover:scale-105 active:scale-95 touch-manipulation text-sm md:text-base"
                     style={{
                       background: "rgba(59, 130, 246, 0.8)",
                       border: "1px solid rgba(96, 165, 250, 0.5)",
@@ -197,7 +195,7 @@ const LiveAvatarDemoContent = () => {
                     Empezar ejercicio
                   </button>
                 ) : (
-                  <div className="text-white text-lg animate-pulse">
+                  <div className="text-white text-base md:text-lg animate-pulse">
                     Iniciando sesión...
                   </div>
                 )}

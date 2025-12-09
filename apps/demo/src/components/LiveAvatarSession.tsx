@@ -58,20 +58,20 @@ const LiveAvatarSessionComponent: React.FC<{
   const messages = useChatHistory();
 
   return (
-    <div className="w-full h-full flex flex-row items-stretch justify-center gap-8 py-8 px-8 min-h-0 max-h-full">
+    <div className="w-full h-full flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-8 p-4 md:py-8 md:px-8 min-h-0 max-h-full overflow-y-auto md:overflow-hidden">
       {/* Left Column: Header + Avatar */}
-      <div className="flex-1 flex flex-col gap-4 min-h-0">
-        <div className="flex flex-row items-center gap-3">
-          <div className="p-2 bg-pink-500/20 rounded-full">
-            <TargetIcon className="text-pink-500 w-6 h-6" />
+      <div className="flex-shrink-0 md:flex-1 flex flex-col gap-3 md:gap-4 min-h-0">
+        <div className="flex flex-row items-center gap-2 md:gap-3">
+          <div className="p-1.5 md:p-2 bg-pink-500/20 rounded-full">
+            <TargetIcon className="text-pink-500 w-5 h-5 md:w-6 md:h-6" />
           </div>
-          <h1 className="text-xl font-black uppercase tracking-wider text-white">
+          <h1 className="text-base md:text-xl font-black uppercase tracking-wider text-white">
             ENTRENADOR AI
           </h1>
         </div>
 
         {/* Avatar Video Container */}
-        <div className="flex-1 relative rounded-3xl overflow-hidden shadow-2xl bg-black/20 backdrop-blur-sm border border-white/10 w-full">
+        <div className="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-black/20 backdrop-blur-sm border border-white/10 w-full max-h-[50vh] md:max-h-none md:flex-1 aspect-video md:aspect-auto">
           <video
             ref={videoRef}
             autoPlay
@@ -79,11 +79,10 @@ const LiveAvatarSessionComponent: React.FC<{
             className="w-full h-full object-cover"
           />
           {sessionState === SessionState.DISCONNECTED && (
-            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md text-white p-6">
-              <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
+            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md text-white p-4 md:p-6">
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-3 md:mb-4">
                 <svg
-                  width="32"
-                  height="32"
+                  className="w-6 h-6 md:w-8 md:h-8"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -103,20 +102,22 @@ const LiveAvatarSessionComponent: React.FC<{
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Sesión Finalizada</h3>
-              <p className="text-white/60 mb-6 text-center max-w-xs">
+              <h3 className="text-lg md:text-xl font-bold mb-2">
+                Sesión Finalizada
+              </h3>
+              <p className="text-white/60 mb-4 md:mb-6 text-center max-w-xs text-sm md:text-base">
                 La conexión se ha perdido o no se pudo establecer.
               </p>
               <button
                 onClick={onSessionStopped}
-                className="px-6 py-2 bg-white text-black font-semibold rounded-full hover:bg-gray-100 transition-colors"
+                className="min-h-[44px] px-5 md:px-6 py-2 bg-white text-black font-semibold rounded-full hover:bg-gray-100 transition-colors touch-manipulation text-sm md:text-base"
               >
                 Volver al Inicio
               </button>
             </div>
           )}
           <button
-            className="absolute top-6 right-6 bg-red-500/80 hover:bg-red-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg"
+            className="absolute top-3 right-3 md:top-6 md:right-6 min-h-[44px] bg-red-500/80 hover:bg-red-600 text-white px-4 md:px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg touch-manipulation active:scale-95 text-sm md:text-base"
             onClick={async () => {
               // Send webhook notification for manual termination
               try {
@@ -148,15 +149,15 @@ const LiveAvatarSessionComponent: React.FC<{
       </div>
 
       {/* Transcription/Chat Area */}
-      <div className="w-[400px] flex flex-col rounded-3xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-md border border-white/10 min-h-0">
-        <div className="p-6 border-b border-white/10 bg-white/5">
-          <h2 className="text-2xl font-bold text-white tracking-wide">
+      <div className="flex-shrink-0 md:flex-shrink w-full md:w-[400px] flex flex-col rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-md border border-white/10 min-h-0 max-h-[40vh] md:max-h-none">
+        <div className="p-4 md:p-6 border-b border-white/10 bg-white/5">
+          <h2 className="text-lg md:text-2xl font-bold text-white tracking-wide">
             Transcripción en vivo
           </h2>
-          <p className="text-white/60 text-sm mt-1">Escuchando...</p>
+          <p className="text-white/60 text-xs md:text-sm mt-1">Escuchando...</p>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3 md:space-y-4">
           {messages &&
             messages.map((msg, index) => (
               <div
@@ -169,7 +170,7 @@ const LiveAvatarSessionComponent: React.FC<{
                   {msg.sender === "user" ? "Tú" : "Avatar"}
                 </span>
                 <div
-                  className={`max-w-[85%] rounded-2xl px-5 py-3 ${
+                  className={`max-w-[85%] rounded-2xl px-4 md:px-5 py-2 md:py-3 text-sm md:text-base ${
                     msg.sender === "user"
                       ? "bg-blue-600/80 text-white rounded-tr-sm"
                       : "bg-pink-600/80 text-white rounded-tl-sm"
@@ -180,10 +181,9 @@ const LiveAvatarSessionComponent: React.FC<{
               </div>
             ))}
           {messages && messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-white/30 space-y-4">
+            <div className="flex flex-col items-center justify-center h-full text-white/30 space-y-3 md:space-y-4">
               <svg
-                width="48"
-                height="48"
+                className="w-10 h-10 md:w-12 md:h-12"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -193,7 +193,9 @@ const LiveAvatarSessionComponent: React.FC<{
                 <path d="M8 12h8" />
                 <path d="M8 10h8" />
               </svg>
-              <p>La conversación aparecerá aquí</p>
+              <p className="text-sm md:text-base">
+                La conversación aparecerá aquí
+              </p>
             </div>
           )}
         </div>
