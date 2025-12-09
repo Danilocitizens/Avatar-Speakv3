@@ -116,10 +116,10 @@ const LiveAvatarSessionComponent: React.FC<{
               </button>
             </div>
           )}
+          {/* Desktop: Button inside video container */}
           <button
-            className="absolute top-3 right-3 md:top-6 md:right-6 min-h-[44px] bg-red-500/80 hover:bg-red-600 text-white px-4 md:px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg touch-manipulation active:scale-95 text-sm md:text-base"
+            className="hidden md:block absolute top-6 right-6 min-h-[44px] bg-red-500/80 hover:bg-red-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg touch-manipulation active:scale-95 text-base"
             onClick={async () => {
-              // Send webhook notification for manual termination
               try {
                 await fetch(
                   "https://devwebhook.inteliventa.ai/webhook/liveavatar",
@@ -146,6 +146,36 @@ const LiveAvatarSessionComponent: React.FC<{
             Terminar ejercicio
           </button>
         </div>
+
+        {/* Mobile: Button outside video container */}
+        <button
+          className="md:hidden w-full min-h-[48px] bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold shadow-lg touch-manipulation active:scale-[0.98] text-sm"
+          onClick={async () => {
+            try {
+              await fetch(
+                "https://devwebhook.inteliventa.ai/webhook/liveavatar",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    Estado: "Terminar ejercicio",
+                    id_interaccion: idInteraction,
+                  }),
+                },
+              );
+            } catch {
+              console.error("Webhook error");
+            }
+            stopSession();
+            if (onSessionComplete) {
+              onSessionComplete();
+            } else {
+              window.open("https://wa.me/+56950164862", "_blank");
+            }
+          }}
+        >
+          Terminar ejercicio
+        </button>
       </div>
 
       {/* Transcription/Chat Area */}
