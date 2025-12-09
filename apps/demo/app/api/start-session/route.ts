@@ -13,10 +13,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const { knowledge_id, voice_id } = body;
-    console.log("Start Session Params:", { knowledge_id, voice_id });
+    console.warn("Start Session Params:", { knowledge_id, voice_id });
 
     if (!knowledge_id) {
-      throw new Error("Missing knowledge_id (CONTEXT_ID). Webhook must provide it.");
+      throw new Error(
+        "Missing knowledge_id (CONTEXT_ID). Webhook must provide it.",
+      );
     }
 
     const res = await fetch(`${API_URL}/v1/sessions/token`, {
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
 
       return new Response(JSON.stringify({ error: errorMessage }), {
         status: res.status,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
     }
     const data = await res.json();
@@ -61,15 +63,18 @@ export async function POST(request: Request) {
     console.error("Error retrieving session token:", error);
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   if (!session_token) {
-    return new Response(JSON.stringify({ error: "Failed to retrieve session token" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Failed to retrieve session token" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
   return new Response(JSON.stringify({ session_token, session_id }), {
     status: 200,

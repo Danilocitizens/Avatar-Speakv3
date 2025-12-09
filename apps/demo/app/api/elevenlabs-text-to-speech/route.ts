@@ -1,10 +1,13 @@
 // import { ELEVENLABS_API_KEY } from "../secrets";
 
 export async function POST(request: Request) {
-  return new Response(JSON.stringify({ error: "ElevenLabs integration disabled" }), {
-    status: 503,
-    headers: { "Content-Type": "application/json" }
-  });
+  return new Response(
+    JSON.stringify({ error: "ElevenLabs integration disabled" }),
+    {
+      status: 503,
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 
   /*
   try {

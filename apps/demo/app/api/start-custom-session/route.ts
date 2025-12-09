@@ -34,7 +34,7 @@ export async function POST() {
       );
     }
     const data = await res.json();
-    console.log(data);
+    console.warn(data);
 
     session_token = data.data.session_token;
     session_id = data.data.session_id;

@@ -75,8 +75,8 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
     this.room = new Room({
       adaptiveStream: supportsAdaptiveStream()
         ? {
-          pauseVideoInBackground: false,
-        }
+            pauseVideoInBackground: false,
+          }
         : false,
       dynacast: supportsDynacast(),
       videoCaptureDefaults: {
@@ -103,7 +103,7 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
   }
 
   public async start(): Promise<void> {
-    console.log("[SDK] start() called. Current state:", this.state);
+    console.warn("[SDK] start() called. Current state:", this.state);
     if (this.state !== SessionState.INACTIVE) {
       console.warn("[SDK] Session is already started or active");
       return;
@@ -111,11 +111,14 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
 
     try {
       this.state = SessionState.CONNECTING;
-      console.log("[SDK] State set to CONNECTING");
+      console.warn("[SDK] State set to CONNECTING");
 
-      console.log("[SDK] Calling sessionClient.startSession()...");
+      console.warn("[SDK] Calling sessionClient.startSession()...");
       this._sessionInfo = await this.sessionClient.startSession();
-      console.log("[SDK] sessionClient.startSession() success. Info:", this._sessionInfo);
+      console.warn(
+        "[SDK] sessionClient.startSession() success. Info:",
+        this._sessionInfo,
+      );
 
       const livekitRoomUrl = this._sessionInfo.livekit_url;
       const livekitClientToken = this._sessionInfo.livekit_client_token;
@@ -123,11 +126,11 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
 
       // Connect to LiveKit room if provided
       if (livekitRoomUrl && livekitClientToken) {
-        console.log("[SDK] Connecting to LiveKit Room...");
+        console.warn("[SDK] Connecting to LiveKit Room...");
         // Track the different events from the room, server, and websocket
         this.trackEvents();
         await this.room.connect(livekitRoomUrl, livekitClientToken);
-        console.log("[SDK] LiveKit Room connected.");
+        console.warn("[SDK] LiveKit Room connected.");
         this.connectionQualityIndicator.start(this.room);
       } else {
         console.warn("[SDK] No LiveKit URL or Token provided.");
@@ -135,17 +138,17 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
 
       // Connect to WebSocket if provided
       if (websocketUrl) {
-        console.log("[SDK] Connecting to WebSocket...", websocketUrl);
+        console.warn("[SDK] Connecting to WebSocket...", websocketUrl);
         await this.connectWebSocket(websocketUrl);
-        console.log("[SDK] WebSocket connected.");
+        console.warn("[SDK] WebSocket connected.");
         this.setupWebSocketManagement();
       }
 
       // Run configurations as needed
-      console.log("[SDK] Configuring session...");
+      console.warn("[SDK] Configuring session...");
       await this.configureSession();
       this.state = SessionState.CONNECTED;
-      console.log("[SDK] Session State set to CONNECTED");
+      console.warn("[SDK] Session State set to CONNECTED");
     } catch (error) {
       console.error("[SDK] Session start failed CAUGHT ERROR:", error);
       this.cleanup();

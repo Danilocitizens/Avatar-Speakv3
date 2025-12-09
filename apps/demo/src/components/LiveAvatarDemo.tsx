@@ -19,13 +19,16 @@ const LiveAvatarDemoContent = () => {
     setError(null);
     try {
       // Webhook Validation
-      const webhookResponse = await fetch("https://devwebhook.inteliventa.ai/webhook/liveavatar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_interaccion: idInteraction || "" })
-      });
+      const webhookResponse = await fetch(
+        "https://devwebhook.inteliventa.ai/webhook/liveavatar",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_interaccion: idInteraction || "" }),
+        },
+      );
       const webhookData = await webhookResponse.json();
-      console.log("Start Session Webhook Data:", webhookData);
+      console.warn("Start Session Webhook Data:", webhookData);
 
       if (webhookData.respuesta === "apagado") {
         setShowNoExerciseScreen(true);
@@ -44,7 +47,9 @@ const LiveAvatarDemoContent = () => {
 
       // If no ID is found, show the "No Exercise" screen instead of erroring
       if (!dynamicKnowledgeId) {
-        console.warn("No CONTEXT_ID provided by webhook. Showing No Exercise screen.");
+        console.warn(
+          "No CONTEXT_ID provided by webhook. Showing No Exercise screen.",
+        );
         setShowNoExerciseScreen(true);
         setIsStarting(false);
         return;
@@ -56,7 +61,7 @@ const LiveAvatarDemoContent = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           knowledge_id: dynamicKnowledgeId,
-          voice_id: webhookData.voice_id
+          voice_id: webhookData.voice_id,
         }),
       });
       if (!res.ok) {
@@ -68,6 +73,7 @@ const LiveAvatarDemoContent = () => {
       const { session_token } = await res.json();
       setSessionToken(session_token);
       setMode("FULL");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.message || "Error al iniciar sesión");
       setIsStarting(false);
@@ -94,20 +100,26 @@ const LiveAvatarDemoContent = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center" style={{
-      background: 'linear-gradient(135deg, #4169E1 0%, #1E3A8A 100%)',
-      height: '100vh',
-      overflow: 'hidden'
-    }}>
+    <div
+      className="w-full h-full flex flex-col items-center justify-center"
+      style={{
+        background: "linear-gradient(135deg, #4169E1 0%, #1E3A8A 100%)",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
       {!sessionToken ? (
         <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4">
           {/* Card Container */}
-          <div className="w-full rounded-2xl p-12 flex flex-col items-center justify-center gap-8" style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
-            minHeight: '400px'
-          }}>
+          <div
+            className="w-full rounded-2xl p-12 flex flex-col items-center justify-center gap-8"
+            style={{
+              background: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(10px)",
+              minHeight: "400px",
+            }}
+          >
             {showEndScreen ? (
               <>
                 <div className="flex items-center gap-3 mb-4">
@@ -123,19 +135,39 @@ const LiveAvatarDemoContent = () => {
               </>
             ) : showNoExerciseScreen ? (
               <>
-                <h2 className="text-2xl font-bold text-white text-center">Todavía no tienes un ejercicio</h2>
-                <p className="text-lg text-white/70 text-center">Puedes volver a WhatsApp para continuar</p>
+                <h2 className="text-2xl font-bold text-white text-center">
+                  Todavía no tienes un ejercicio
+                </h2>
+                <p className="text-lg text-white/70 text-center">
+                  Puedes volver a WhatsApp para continuar
+                </p>
               </>
             ) : (
               <>
                 {/* Header with Icon and Title */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{
-                    background: 'linear-gradient(135deg, #FF1493 0%, #FF69B4 100%)',
-                    boxShadow: '0 0 20px rgba(255, 20, 147, 0.5)'
-                  }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="12" cy="12" r="8" stroke="white" strokeWidth="2" />
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #FF1493 0%, #FF69B4 100%)",
+                      boxShadow: "0 0 20px rgba(255, 20, 147, 0.5)",
+                    }}
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="8"
+                        stroke="white"
+                        strokeWidth="2"
+                      />
                       <circle cx="12" cy="12" r="3" fill="white" />
                     </svg>
                   </div>
@@ -157,9 +189,9 @@ const LiveAvatarDemoContent = () => {
                     onClick={handleStart}
                     className="px-8 py-3 rounded-lg font-semibold text-white transition-all duration-200 hover:scale-105 active:scale-95"
                     style={{
-                      background: 'rgba(59, 130, 246, 0.8)',
-                      border: '1px solid rgba(96, 165, 250, 0.5)',
-                      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
+                      background: "rgba(59, 130, 246, 0.8)",
+                      border: "1px solid rgba(96, 165, 250, 0.5)",
+                      boxShadow: "0 4px 15px rgba(59, 130, 246, 0.3)",
                     }}
                   >
                     Empezar ejercicio
@@ -191,5 +223,5 @@ export const LiveAvatarDemo = () => {
     <Suspense fallback={<div className="text-white">Cargando...</div>}>
       <LiveAvatarDemoContent />
     </Suspense>
-  )
-}
+  );
+};

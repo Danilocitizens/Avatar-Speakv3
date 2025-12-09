@@ -6,10 +6,13 @@ const SYSTEM_PROMPT =
 */
 
 export async function POST(request: Request) {
-  return new Response(JSON.stringify({ error: "OpenAI integration disabled" }), {
-    status: 503,
-    headers: { "Content-Type": "application/json" }
-  });
+  return new Response(
+    JSON.stringify({ error: "OpenAI integration disabled" }),
+    {
+      status: 503,
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 
   /*
   try {

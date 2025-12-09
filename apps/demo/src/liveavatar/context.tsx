@@ -130,7 +130,7 @@ const useTalkingState = (sessionRef: React.RefObject<LiveAvatarSession>) => {
 const useChatHistoryState = (
   sessionRef: React.RefObject<LiveAvatarSession>,
   idInteraction: string,
-  onSessionComplete?: () => void
+  onSessionComplete?: () => void,
 ) => {
   const [messages, setMessages] = useState<LiveAvatarSessionMessage[]>([]);
   const avatarTranscriptBuffer = useRef("");
@@ -138,10 +138,7 @@ const useChatHistoryState = (
   useEffect(() => {
     const session = sessionRef.current;
     if (session) {
-      const handleMessage = (
-        sender: MessageSender,
-        message: string
-      ) => {
+      const handleMessage = (sender: MessageSender, message: string) => {
         setMessages((prev) => [
           ...prev,
           {
@@ -152,8 +149,9 @@ const useChatHistoryState = (
         ]);
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const handleUserTranscription = async (data: any) => {
-        console.log("USER_TRANSCRIPTION", data);
+        console.warn("USER_TRANSCRIPTION", data);
         if (data.text) {
           handleMessage(MessageSender.USER, data.text);
 
@@ -169,7 +167,7 @@ const useChatHistoryState = (
                 text: data.text,
                 avatar_text: avatarTranscriptBuffer.current,
                 id_interaccion: idInteraction || "",
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
               }),
             })
               .then(async (res) => {
@@ -186,7 +184,7 @@ const useChatHistoryState = (
                   console.error("Error parsing webhook response:", e);
                 }
               })
-              .catch(err => {
+              .catch((err) => {
                 console.error("Webhook Send Error (Silenced):", err);
               });
           } catch (e) {
@@ -195,8 +193,9 @@ const useChatHistoryState = (
         }
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const handleAvatarTranscription = (data: any) => {
-        console.log("AVATAR_TRANSCRIPTION", data);
+        console.warn("AVATAR_TRANSCRIPTION", data);
         if (data.text) {
           handleMessage(MessageSender.AVATAR, data.text);
           avatarTranscriptBuffer.current = data.text; // Update buffer
@@ -204,19 +203,34 @@ const useChatHistoryState = (
       };
 
       const handleAvatarSpeakStarted = () => {
-        // Optionally clear buffer on new start IF needed. 
+        // Optionally clear buffer on new start IF needed.
         // But for now, we just keep updating the buffer on transcription events.
         avatarTranscriptBuffer.current = "";
       };
 
       session.on(AgentEventsEnum.USER_TRANSCRIPTION, handleUserTranscription);
-      session.on(AgentEventsEnum.AVATAR_TRANSCRIPTION, handleAvatarTranscription);
-      session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, handleAvatarSpeakStarted);
+      session.on(
+        AgentEventsEnum.AVATAR_TRANSCRIPTION,
+        handleAvatarTranscription,
+      );
+      session.on(
+        AgentEventsEnum.AVATAR_SPEAK_STARTED,
+        handleAvatarSpeakStarted,
+      );
 
       return () => {
-        session.off(AgentEventsEnum.USER_TRANSCRIPTION, handleUserTranscription);
-        session.off(AgentEventsEnum.AVATAR_TRANSCRIPTION, handleAvatarTranscription);
-        session.off(AgentEventsEnum.AVATAR_SPEAK_STARTED, handleAvatarSpeakStarted);
+        session.off(
+          AgentEventsEnum.USER_TRANSCRIPTION,
+          handleUserTranscription,
+        );
+        session.off(
+          AgentEventsEnum.AVATAR_TRANSCRIPTION,
+          handleAvatarTranscription,
+        );
+        session.off(
+          AgentEventsEnum.AVATAR_SPEAK_STARTED,
+          handleAvatarSpeakStarted,
+        );
       };
     }
   }, [sessionRef, idInteraction, onSessionComplete]);
@@ -228,8 +242,11 @@ export const LiveAvatarContextProvider = ({
   children,
   sessionAccessToken,
   idInteraction,
-  onSessionComplete
-}: LiveAvatarContextProviderProps & { idInteraction: string, onSessionComplete?: () => void }) => {
+  onSessionComplete,
+}: LiveAvatarContextProviderProps & {
+  idInteraction: string;
+  onSessionComplete?: () => void;
+}) => {
   // Default voice chat on
   const config = {
     voiceChat: true,
@@ -244,7 +261,11 @@ export const LiveAvatarContextProvider = ({
 
   const { isMuted, voiceChatState } = useVoiceChatState(sessionRef);
   const { isUserTalking, isAvatarTalking } = useTalkingState(sessionRef);
-  const { messages } = useChatHistoryState(sessionRef, idInteraction, onSessionComplete);
+  const { messages } = useChatHistoryState(
+    sessionRef,
+    idInteraction,
+    onSessionComplete,
+  );
 
   return (
     <LiveAvatarContext.Provider
