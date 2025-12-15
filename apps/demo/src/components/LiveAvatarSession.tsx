@@ -58,6 +58,28 @@ const LiveAvatarSessionComponent: React.FC<{
     }
   }, [isStreamReady, isActive, start]);
 
+  // Local manual stopwatch hook logic
+  const [manualTimer, setManualTimer] = React.useState(0);
+  const [manualTimerRunning, setManualTimerRunning] = React.useState(false);
+  const manualIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (manualIntervalRef.current) {
+        clearInterval(manualIntervalRef.current);
+      }
+    };
+  }, []);
+
+  const startManualTimer = () => {
+    if (manualIntervalRef.current) return;
+    setManualTimerRunning(true);
+    setManualTimer(0);
+    manualIntervalRef.current = setInterval(() => {
+      setManualTimer((t) => t + 1);
+    }, 1000);
+  };
+
   const messages = useChatHistory();
 
   return (
@@ -81,7 +103,7 @@ const LiveAvatarSessionComponent: React.FC<{
             playsInline
             className="w-full h-full object-cover"
           />
-          {/* Timer Display */}
+          {/* Main Context Timer Display (Existing) */}
           {showTimer && timerValue !== null && (
             <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
               <div
@@ -95,6 +117,17 @@ const LiveAvatarSessionComponent: React.FC<{
               </div>
             </div>
           )}
+
+          {/* New Independent Manual Stopwatch (Requested) */}
+          {manualTimerRunning && (
+            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50">
+              <div className="bg-blue-600/60 backdrop-blur-md border border-blue-400/30 text-white px-4 py-1 rounded-full font-mono font-bold text-lg shadow-lg flex items-center gap-2">
+                <span>⏱️</span>
+                {formatTime(manualTimer)}
+              </div>
+            </div>
+          )}
+
           {sessionState === SessionState.DISCONNECTED && (
             <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md text-white p-4 md:p-6">
               <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-3 md:mb-4">
@@ -133,9 +166,55 @@ const LiveAvatarSessionComponent: React.FC<{
               </button>
             </div>
           )}
-          {/* Desktop: Button inside video container */}
+
+          {/* Desktop Controls */}
+          <div className="hidden md:flex absolute top-6 right-6 flex-col gap-2 items-end">
+            {/* Existing End Button */}
+            <button
+              className="min-h-[44px] bg-red-500/80 hover:bg-red-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg touch-manipulation active:scale-95 text-base"
+              onClick={async () => {
+                try {
+                  await fetch(
+                    "https://devwebhook.inteliventa.ai/webhook/liveavatar",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        Estado: "Terminar ejercicio",
+                        id_interaccion: idInteraction,
+                      }),
+                    },
+                  );
+                } catch {
+                  console.error("Webhook error");
+                }
+                stopSession();
+                if (onSessionComplete) {
+                  onSessionComplete();
+                } else {
+                  window.open("https://wa.me/+56950164862", "_blank");
+                }
+              }}
+            >
+              Terminar ejercicio
+            </button>
+
+            {/* New Manual Timer Start Button */}
+            {!manualTimerRunning && (
+              <button
+                className="min-h-[44px] bg-blue-500/80 hover:bg-blue-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg touch-manipulation active:scale-95 text-base"
+                onClick={startManualTimer}
+              >
+                Empezar cronometro
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Controls */}
+        <div className="md:hidden w-full flex flex-col gap-2">
           <button
-            className="hidden md:block absolute top-6 right-6 min-h-[44px] bg-red-500/80 hover:bg-red-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg touch-manipulation active:scale-95 text-base"
+            className="w-full min-h-[48px] bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold shadow-lg touch-manipulation active:scale-[0.98] text-sm"
             onClick={async () => {
               try {
                 await fetch(
@@ -162,37 +241,17 @@ const LiveAvatarSessionComponent: React.FC<{
           >
             Terminar ejercicio
           </button>
-        </div>
 
-        {/* Mobile: Button outside video container */}
-        <button
-          className="md:hidden w-full min-h-[48px] bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold shadow-lg touch-manipulation active:scale-[0.98] text-sm"
-          onClick={async () => {
-            try {
-              await fetch(
-                "https://devwebhook.inteliventa.ai/webhook/liveavatar",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    Estado: "Terminar ejercicio",
-                    id_interaccion: idInteraction,
-                  }),
-                },
-              );
-            } catch {
-              console.error("Webhook error");
-            }
-            stopSession();
-            if (onSessionComplete) {
-              onSessionComplete();
-            } else {
-              window.open("https://wa.me/+56950164862", "_blank");
-            }
-          }}
-        >
-          Terminar ejercicio
-        </button>
+          {/* New Manual Timer Start Button Mobile */}
+          {!manualTimerRunning && (
+            <button
+              className="w-full min-h-[48px] bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold shadow-lg touch-manipulation active:scale-[0.98] text-sm"
+              onClick={startManualTimer}
+            >
+              Empezar cronometro
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Transcription/Chat Area */}
