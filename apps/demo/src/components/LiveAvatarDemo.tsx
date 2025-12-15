@@ -99,16 +99,10 @@ const LiveAvatarDemoContent = () => {
         webhookData.inicio_seg &&
         webhookData.inicio_seg !== "no disponible"
       ) {
-        console.warn("webhookData.inicio_seg found:", webhookData.inicio_seg);
         const parsed = parseInt(webhookData.inicio_seg, 10);
         if (!isNaN(parsed)) {
-          console.warn("Parsed timerSeconds:", parsed);
           parsedTimer = parsed;
-        } else {
-          console.warn("Failed to parse timerSeconds, setting null");
         }
-      } else {
-        console.warn("inicio_seg not found or no disponible");
       }
 
       setTimerSeconds(parsedTimer);

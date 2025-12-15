@@ -142,7 +142,6 @@ const useTimerState = (
   const [hasTimerStarted, setHasTimerStarted] = useState(false);
 
   useEffect(() => {
-    console.warn("useTimerState - initialSeconds changed:", initialSeconds);
     if (typeof initialSeconds === "number" && initialSeconds !== null) {
       setTimerValue(initialSeconds);
     } else {
@@ -158,40 +157,43 @@ const useTimerState = (
       typeof initialSeconds === "number" &&
       initialSeconds !== null
     ) {
-      const handleAvatarSpeakStart = () => {
-        console.warn("EVENT: AVATAR_SPEAK_STARTED fired!");
+      const handleUserSpeakStart = () => {
         if (!hasTimerStarted) {
-          console.warn("Starting timer...");
           setHasTimerStarted(true);
         }
       };
       // We only listen if timer hasn't started yet
       if (!hasTimerStarted) {
-        console.warn("Attaching AVATAR_SPEAK_STARTED listener");
-        session.on(
-          AgentEventsEnum.AVATAR_SPEAK_STARTED,
-          handleAvatarSpeakStart,
-        );
+        session.on(AgentEventsEnum.USER_SPEAK_STARTED, handleUserSpeakStart);
       }
       return () => {
-        console.warn("Removing AVATAR_SPEAK_STARTED listener");
-        session.off(
-          AgentEventsEnum.AVATAR_SPEAK_STARTED,
-          handleAvatarSpeakStart,
-        );
+        session.off(AgentEventsEnum.USER_SPEAK_STARTED, handleUserSpeakStart);
       };
     }
   }, [sessionRef, initialSeconds, hasTimerStarted]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (hasTimerStarted && timerValue !== null && timerValue > 0) {
-      interval = setInterval(() => {
-        setTimerValue((prev) => (prev !== null && prev > 0 ? prev - 1 : 0));
-      }, 1000);
+    if (hasTimerStarted && timerValue !== null) {
+      // Check if we should count up (stopwatch) or down (timer)
+      // We rely on initialSeconds to determine the mode.
+      const isStopwatch = initialSeconds === 0;
+
+      if (isStopwatch || timerValue > 0) {
+        interval = setInterval(() => {
+          setTimerValue((prev) => {
+            if (prev === null) return null;
+            if (isStopwatch) {
+              return prev + 1;
+            } else {
+              return prev > 0 ? prev - 1 : 0;
+            }
+          });
+        }, 1000);
+      }
     }
     return () => clearInterval(interval);
-  }, [hasTimerStarted, timerValue]);
+  }, [hasTimerStarted, timerValue, initialSeconds]);
 
   return {
     timerValue,

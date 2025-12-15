@@ -37,7 +37,7 @@ const LiveAvatarSessionComponent: React.FC<{
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    console.warn("[UI] sessionState changed:", sessionState);
+    // console.warn("[UI] sessionState changed:", sessionState);
   }, [sessionState]);
 
   useEffect(() => {
@@ -62,11 +62,6 @@ const LiveAvatarSessionComponent: React.FC<{
 
   return (
     <div className="w-full h-full flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-8 p-4 md:py-8 md:px-8 min-h-0 max-h-full overflow-y-auto md:overflow-hidden relative">
-      <div className="absolute bottom-2 left-2 z-[100] bg-black/80 text-white text-xs p-2 rounded pointer-events-none font-mono">
-        DEBUG: Timer: {timerValue !== null ? timerValue : "null"} | Show:{" "}
-        {String(showTimer)}
-      </div>
-
       {/* Left Column: Header + Avatar */}
       <div className="flex-shrink-0 md:flex-1 flex flex-col gap-3 md:gap-4 min-h-0">
         <div className="flex flex-row items-center gap-2 md:gap-3">
