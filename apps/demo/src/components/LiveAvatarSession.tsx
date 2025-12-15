@@ -6,9 +6,17 @@ import {
   useSession,
   useVoiceChat,
   useChatHistory,
+  useLiveAvatarContext,
 } from "../liveavatar";
 import { SessionState } from "@heygen/liveavatar-web-sdk";
 import { TargetIcon } from "./Icons";
+
+// Helper for formatting time
+const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
 
 const LiveAvatarSessionComponent: React.FC<{
   mode: "FULL" | "CUSTOM";
@@ -25,6 +33,7 @@ const LiveAvatarSessionComponent: React.FC<{
     attachElement,
   } = useSession();
   const { start, isActive } = useVoiceChat();
+  const { timerValue, showTimer } = useLiveAvatarContext();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -78,6 +87,20 @@ const LiveAvatarSessionComponent: React.FC<{
             playsInline
             className="w-full h-full object-cover"
           />
+          {/* Timer Display */}
+          {showTimer && timerValue !== null && (
+            <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
+              <div
+                className="bg-black/40 backdrop-blur-md border border-white/20 text-white px-6 py-2 rounded-full font-mono font-bold text-xl md:text-2xl shadow-lg"
+                style={{
+                  textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                  boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+                }}
+              >
+                {formatTime(timerValue)}
+              </div>
+            </div>
+          )}
           {sessionState === SessionState.DISCONNECTED && (
             <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md text-white p-4 md:p-6">
               <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-3 md:mb-4">
@@ -240,18 +263,21 @@ export const LiveAvatarSession: React.FC<{
   onSessionStopped: () => void;
   onSessionComplete?: () => void;
   idInteraction: string;
+  initialTimerSeconds?: number | null;
 }> = ({
   mode,
   sessionAccessToken,
   onSessionStopped,
   onSessionComplete,
   idInteraction,
+  initialTimerSeconds,
 }) => {
   return (
     <LiveAvatarContextProvider
       sessionAccessToken={sessionAccessToken}
       idInteraction={idInteraction}
       onSessionComplete={onSessionComplete}
+      initialTimerSeconds={initialTimerSeconds}
     >
       <LiveAvatarSessionComponent
         mode={mode}

@@ -11,6 +11,7 @@ const LiveAvatarDemoContent = () => {
   const [isStarting, setIsStarting] = useState(false);
   const [showNoExerciseScreen, setShowNoExerciseScreen] = useState(false);
   const [showEndScreen, setShowEndScreen] = useState(false);
+  const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const idInteraction = searchParams.get("id");
 
@@ -73,6 +74,21 @@ const LiveAvatarDemoContent = () => {
       const { session_token } = await res.json();
       setSessionToken(session_token);
       setMode("FULL");
+
+      // Parse inicio_seg
+      if (
+        webhookData.inicio_seg &&
+        webhookData.inicio_seg !== "no disponible"
+      ) {
+        const parsed = parseInt(webhookData.inicio_seg, 10);
+        if (!isNaN(parsed)) {
+          setTimerSeconds(parsed);
+        } else {
+          setTimerSeconds(null);
+        }
+      } else {
+        setTimerSeconds(null);
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.message || "Error al iniciar sesión");
@@ -210,6 +226,7 @@ const LiveAvatarDemoContent = () => {
           onSessionStopped={onSessionStopped}
           onSessionComplete={onSessionComplete}
           idInteraction={idInteraction || ""}
+          initialTimerSeconds={timerSeconds}
         />
       )}
     </div>

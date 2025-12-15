@@ -25,6 +25,9 @@ type LiveAvatarContextProps = {
   isAvatarTalking: boolean;
 
   messages: LiveAvatarSessionMessage[];
+
+  timerValue: number | null;
+  showTimer: boolean;
 };
 
 export const LiveAvatarContext = createContext<LiveAvatarContextProps>({
@@ -39,12 +42,16 @@ export const LiveAvatarContext = createContext<LiveAvatarContextProps>({
   isUserTalking: false,
   isAvatarTalking: false,
   messages: [],
+  timerValue: null,
+  showTimer: false,
 });
 
 type LiveAvatarContextProviderProps = {
   children: React.ReactNode;
   sessionAccessToken: string;
   idInteraction: string;
+  onSessionComplete?: () => void;
+  initialTimerSeconds?: number | null;
 };
 
 const useSessionState = (sessionRef: React.RefObject<LiveAvatarSession>) => {
@@ -125,6 +132,66 @@ const useTalkingState = (sessionRef: React.RefObject<LiveAvatarSession>) => {
   }, [sessionRef]);
 
   return { isUserTalking, isAvatarTalking };
+};
+
+const useTimerState = (
+  sessionRef: React.RefObject<LiveAvatarSession>,
+  initialSeconds?: number | null,
+) => {
+  const [timerValue, setTimerValue] = useState<number | null>(null);
+  const [hasTimerStarted, setHasTimerStarted] = useState(false);
+
+  useEffect(() => {
+    if (typeof initialSeconds === "number" && initialSeconds !== null) {
+      setTimerValue(initialSeconds);
+    } else {
+      setTimerValue(null);
+    }
+    setHasTimerStarted(false);
+  }, [initialSeconds]);
+
+  useEffect(() => {
+    const session = sessionRef.current;
+    if (
+      session &&
+      typeof initialSeconds === "number" &&
+      initialSeconds !== null
+    ) {
+      const handleAvatarSpeakStart = () => {
+        if (!hasTimerStarted) {
+          setHasTimerStarted(true);
+        }
+      };
+      // We only listen if timer hasn't started yet
+      if (!hasTimerStarted) {
+        session.on(
+          AgentEventsEnum.AVATAR_SPEAK_STARTED,
+          handleAvatarSpeakStart,
+        );
+      }
+      return () => {
+        session.off(
+          AgentEventsEnum.AVATAR_SPEAK_STARTED,
+          handleAvatarSpeakStart,
+        );
+      };
+    }
+  }, [sessionRef, initialSeconds, hasTimerStarted]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (hasTimerStarted && timerValue !== null && timerValue > 0) {
+      interval = setInterval(() => {
+        setTimerValue((prev) => (prev !== null && prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [hasTimerStarted, timerValue]);
+
+  return {
+    timerValue,
+    showTimer: typeof initialSeconds === "number" && initialSeconds !== null,
+  };
 };
 
 const useChatHistoryState = (
@@ -243,10 +310,8 @@ export const LiveAvatarContextProvider = ({
   sessionAccessToken,
   idInteraction,
   onSessionComplete,
-}: LiveAvatarContextProviderProps & {
-  idInteraction: string;
-  onSessionComplete?: () => void;
-}) => {
+  initialTimerSeconds,
+}: LiveAvatarContextProviderProps) => {
   // Default voice chat on
   const config = {
     voiceChat: true,
@@ -266,6 +331,10 @@ export const LiveAvatarContextProvider = ({
     idInteraction,
     onSessionComplete,
   );
+  const { timerValue, showTimer } = useTimerState(
+    sessionRef,
+    initialTimerSeconds,
+  );
 
   return (
     <LiveAvatarContext.Provider
@@ -279,6 +348,8 @@ export const LiveAvatarContextProvider = ({
         isUserTalking,
         isAvatarTalking,
         messages,
+        timerValue,
+        showTimer,
       }}
     >
       {children}
