@@ -130,6 +130,8 @@ const LiveAvatarSessionComponent: React.FC<{
   useEffect(() => {
     if (typeof initialTimerSeconds === "number") {
       setManualTimer(initialTimerSeconds);
+      // User requested: Auto-start as soon as we have webhook data
+      startManualTimer();
     }
   }, [initialTimerSeconds]);
 
@@ -280,16 +282,6 @@ const LiveAvatarSessionComponent: React.FC<{
             >
               Terminar ejercicio
             </button>
-
-            {/* New Manual Timer Start Button */}
-            {!manualTimerRunning && (
-              <button
-                className="min-h-[44px] bg-blue-500/80 hover:bg-blue-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg touch-manipulation active:scale-95 text-base"
-                onClick={startManualTimer}
-              >
-                Empezar cronometro
-              </button>
-            )}
           </div>
         </div>
 
@@ -323,16 +315,6 @@ const LiveAvatarSessionComponent: React.FC<{
           >
             Terminar ejercicio
           </button>
-
-          {/* New Manual Timer Start Button Mobile */}
-          {!manualTimerRunning && (
-            <button
-              className="w-full min-h-[48px] bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold shadow-lg touch-manipulation active:scale-[0.98] text-sm"
-              onClick={startManualTimer}
-            >
-              Empezar cronometro
-            </button>
-          )}
         </div>
       </div>
 
