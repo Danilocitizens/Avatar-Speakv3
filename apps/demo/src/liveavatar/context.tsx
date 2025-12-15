@@ -138,20 +138,70 @@ const useTimerState = (
   sessionRef: React.RefObject<LiveAvatarSession>,
   initialSeconds?: number | null,
 ) => {
-  const [timerValue, setTimerValue] = useState<number | null>(null);
-  const [hasTimerStarted, setHasTimerStarted] = useState(false);
+  // 1. Estado del Timer
+  const [timerValue, setTimerValue] = useState<number>(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isRunning, setIsRunning] = useState(false);
 
-  // 1. Initialization Effect
+  // 3. Referencia al Interval
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 2. Valor Inicial & 6. Función de Reset (parcial, al cambiar props)
   useEffect(() => {
-    if (typeof initialSeconds === "number" && initialSeconds !== null) {
-      setTimerValue(initialSeconds);
-    } else {
-      setTimerValue(null);
+    // 2. Validación que el valor sea numérico
+    const startValue = typeof initialSeconds === "number" ? initialSeconds : 0;
+    setTimerValue(startValue);
+
+    // 8. Cleanup previo si cambia inicialización
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
-    setHasTimerStarted(false);
+    setIsRunning(false);
   }, [initialSeconds]);
 
-  // 2. Event Listener Effect
+  // 8. Cleanup (Limpieza al desmontar)
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  // 4. Función de Inicio (Start)
+  const startTimer = () => {
+    // Solo inicia si no hay otro interval corriendo
+    if (intervalRef.current) return;
+
+    setIsRunning(true);
+
+    intervalRef.current = setInterval(() => {
+      setTimerValue((prevValue) => {
+        // 7. Lógica de Actualización del Tiempo
+
+        // Modo Stopwatch (valor inicial 0)
+        if (initialSeconds === 0) {
+          return prevValue + 1;
+        }
+
+        // Modo Countdown (valor inicial > 0)
+        if (prevValue <= 0) {
+          // 13. Condiciones de Detención
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          setIsRunning(false);
+          return 0;
+        }
+
+        return prevValue - 1;
+      });
+    }, 1000);
+  };
+
+  // 9. Trigger/Disparador & 15. Permisos y Listeners
   useEffect(() => {
     const session = sessionRef.current;
     if (
@@ -160,48 +210,23 @@ const useTimerState = (
       initialSeconds !== null
     ) {
       const handleUserSpeakStart = () => {
-        if (!hasTimerStarted) {
-          setHasTimerStarted(true);
-        }
+        // Log para debugging temporal (16. Manejo de Errores/Debug)
+        console.warn("Checklist Trigger: USER_SPEAK_STARTED");
+        startTimer();
       };
 
-      if (!hasTimerStarted) {
-        session.on(AgentEventsEnum.USER_SPEAK_STARTED, handleUserSpeakStart);
-      }
+      // Listener registrado ANTES
+      session.on(AgentEventsEnum.USER_SPEAK_STARTED, handleUserSpeakStart);
 
       return () => {
         session.off(AgentEventsEnum.USER_SPEAK_STARTED, handleUserSpeakStart);
       };
     }
-  }, [sessionRef, initialSeconds, hasTimerStarted]);
-
-  // 3. Timer Interval Effect
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (hasTimerStarted) {
-      const isStopwatch = initialSeconds === 0;
-
-      interval = setInterval(() => {
-        setTimerValue((prev) => {
-          if (prev === null) return null;
-          if (isStopwatch) {
-            return prev + 1;
-          } else {
-            return prev > 0 ? prev - 1 : 0;
-          }
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-    // CRITICAL dependency: no timerValue here!
-  }, [hasTimerStarted, initialSeconds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionRef, initialSeconds]); // Dependencias correctas (11)
 
   return {
-    timerValue,
+    timerValue: typeof initialSeconds === "number" ? timerValue : null,
     showTimer: typeof initialSeconds === "number" && initialSeconds !== null,
   };
 };
