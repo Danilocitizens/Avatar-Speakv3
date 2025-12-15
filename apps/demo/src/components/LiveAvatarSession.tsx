@@ -139,6 +139,14 @@ const LiveAvatarSessionComponent: React.FC<{
   const [manualTimerRunning, setManualTimerRunning] = React.useState(false);
   const manualIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Effect to initialize manual timer if prop is present (so it shows correct start value visually if we decide to show it static,
+  // or just to ensure it starts from correct value)
+  useEffect(() => {
+    if (typeof initialTimerSeconds === "number") {
+      setManualTimer(initialTimerSeconds);
+    }
+  }, [initialTimerSeconds]);
+
   useEffect(() => {
     return () => {
       if (manualIntervalRef.current) {
@@ -149,10 +157,36 @@ const LiveAvatarSessionComponent: React.FC<{
 
   const startManualTimer = () => {
     if (manualIntervalRef.current) return;
+
+    // Explicitly set start value on click (redundant if effect ran, but safe)
+    if (typeof initialTimerSeconds === "number") {
+      setManualTimer(initialTimerSeconds);
+    } else {
+      setManualTimer(0);
+    }
+
     setManualTimerRunning(true);
-    setManualTimer(0);
+
     manualIntervalRef.current = setInterval(() => {
-      setManualTimer((t) => t + 1);
+      setManualTimer((prev) => {
+        // Match Main Timer Logic
+
+        // Stopwatch Mode (0 -> Up)
+        if (initialTimerSeconds === 0 || !initialTimerSeconds) {
+          return prev + 1;
+        }
+
+        // Countdown Mode (>0 -> Down)
+        if (prev <= 0) {
+          if (manualIntervalRef.current) {
+            clearInterval(manualIntervalRef.current);
+            manualIntervalRef.current = null;
+          }
+          setManualTimerRunning(false);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
   };
 
