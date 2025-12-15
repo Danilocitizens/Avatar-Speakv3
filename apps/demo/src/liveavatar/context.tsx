@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import {
   ConnectionQuality,
   LiveAvatarSession,
@@ -138,6 +145,8 @@ const useTimerState = (
   sessionRef: React.RefObject<LiveAvatarSession>,
   initialSeconds?: number | null,
 ) => {
+  console.log("📊 Timer initialized with:", initialSeconds);
+
   // 1. Estado del Timer
   const [timerValue, setTimerValue] = useState<number>(0);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -146,13 +155,12 @@ const useTimerState = (
   // 3. Referencia al Interval
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 2. Valor Inicial & 6. Función de Reset (parcial, al cambiar props)
+  // 2. Valor Inicial & 6. Función de Reset
   useEffect(() => {
-    // 2. Validación que el valor sea numérico
     const startValue = typeof initialSeconds === "number" ? initialSeconds : 0;
     setTimerValue(startValue);
 
-    // 8. Cleanup previo si cambia inicialización
+    // Cleanup previo
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -160,7 +168,7 @@ const useTimerState = (
     setIsRunning(false);
   }, [initialSeconds]);
 
-  // 8. Cleanup (Limpieza al desmontar)
+  // 8. Cleanup global
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
@@ -169,25 +177,23 @@ const useTimerState = (
     };
   }, []);
 
-  // 4. Función de Inicio (Start)
-  const startTimer = () => {
-    // Solo inicia si no hay otro interval corriendo
+  // 4. Función de Inicio (Start) con useCallback
+  const startTimer = useCallback(() => {
     if (intervalRef.current) return;
 
+    console.log("🚀 TIMER STARTING NOW"); // DEBUG
     setIsRunning(true);
 
     intervalRef.current = setInterval(() => {
+      // console.log("⏱️ TICK"); // Removed spammy log
       setTimerValue((prevValue) => {
-        // 7. Lógica de Actualización del Tiempo
-
-        // Modo Stopwatch (valor inicial 0)
         if (initialSeconds === 0) {
+          // Stopwatch
           return prevValue + 1;
         }
 
-        // Modo Countdown (valor inicial > 0)
+        // Countdown
         if (prevValue <= 0) {
-          // 13. Condiciones de Detención
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
@@ -199,7 +205,7 @@ const useTimerState = (
         return prevValue - 1;
       });
     }, 1000);
-  };
+  }, [initialSeconds]);
 
   // 9. Trigger/Disparador & 15. Permisos y Listeners
   useEffect(() => {
@@ -209,13 +215,13 @@ const useTimerState = (
       typeof initialSeconds === "number" &&
       initialSeconds !== null
     ) {
+      console.log("👂 Listener registered for USER_SPEAK_STARTED");
+
       const handleUserSpeakStart = () => {
-        // Log para debugging temporal (16. Manejo de Errores/Debug)
-        console.warn("Checklist Trigger: USER_SPEAK_STARTED");
+        console.log("🎤 USER_SPEAK_STARTED event fired!");
         startTimer();
       };
 
-      // Listener registrado ANTES
       session.on(AgentEventsEnum.USER_SPEAK_STARTED, handleUserSpeakStart);
 
       return () => {
@@ -223,7 +229,7 @@ const useTimerState = (
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionRef, initialSeconds]); // Dependencias correctas (11)
+  }, [sessionRef, initialSeconds, startTimer]); // Added startTimer dependency
 
   return {
     timerValue: typeof initialSeconds === "number" ? timerValue : null,
