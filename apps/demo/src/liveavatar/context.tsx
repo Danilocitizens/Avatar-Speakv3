@@ -142,6 +142,7 @@ const useTimerState = (
   const [hasTimerStarted, setHasTimerStarted] = useState(false);
 
   useEffect(() => {
+    console.warn("useTimerState - initialSeconds changed:", initialSeconds);
     if (typeof initialSeconds === "number" && initialSeconds !== null) {
       setTimerValue(initialSeconds);
     } else {
@@ -158,18 +159,22 @@ const useTimerState = (
       initialSeconds !== null
     ) {
       const handleAvatarSpeakStart = () => {
+        console.warn("EVENT: AVATAR_SPEAK_STARTED fired!");
         if (!hasTimerStarted) {
+          console.warn("Starting timer...");
           setHasTimerStarted(true);
         }
       };
       // We only listen if timer hasn't started yet
       if (!hasTimerStarted) {
+        console.warn("Attaching AVATAR_SPEAK_STARTED listener");
         session.on(
           AgentEventsEnum.AVATAR_SPEAK_STARTED,
           handleAvatarSpeakStart,
         );
       }
       return () => {
+        console.warn("Removing AVATAR_SPEAK_STARTED listener");
         session.off(
           AgentEventsEnum.AVATAR_SPEAK_STARTED,
           handleAvatarSpeakStart,

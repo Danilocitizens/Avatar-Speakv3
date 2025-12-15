@@ -31,6 +31,26 @@ const LiveAvatarDemoContent = () => {
       const webhookData = await webhookResponse.json();
       console.warn("Start Session Webhook Data:", webhookData);
 
+      // Parse inicio_seg
+      if (
+        webhookData.inicio_seg &&
+        webhookData.inicio_seg !== "no disponible"
+      ) {
+        // Log the raw value
+        console.warn("webhookData.inicio_seg found:", webhookData.inicio_seg);
+        const parsed = parseInt(webhookData.inicio_seg, 10);
+        if (!isNaN(parsed)) {
+          console.warn("Parsed timerSeconds:", parsed);
+          setTimerSeconds(parsed);
+        } else {
+          console.warn("Failed to parse timerSeconds, setting null");
+          setTimerSeconds(null);
+        }
+      } else {
+        console.warn("inicio_seg not found or no disponible");
+        setTimerSeconds(null);
+      }
+
       if (webhookData.respuesta === "apagado") {
         setShowNoExerciseScreen(true);
         setIsStarting(false);
