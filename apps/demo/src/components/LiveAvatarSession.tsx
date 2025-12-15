@@ -9,7 +9,7 @@ import {
   useLiveAvatarContext,
 } from "../liveavatar";
 import { SessionState } from "@heygen/liveavatar-web-sdk";
-import { TargetIcon } from "./Icons";
+import { TargetIcon, StopwatchIcon } from "./Icons";
 
 // Helper for formatting time
 const formatTime = (seconds: number) => {
@@ -133,10 +133,21 @@ const LiveAvatarSessionComponent: React.FC<{
 
           {/* New Independent Manual Stopwatch (Requested) */}
           {manualTimerRunning && (
-            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50">
-              <div className="bg-blue-600/60 backdrop-blur-md border border-blue-400/30 text-white px-4 py-1 rounded-full font-mono font-bold text-lg shadow-lg flex items-center gap-2">
-                <span>⏱️</span>
-                {formatTime(manualTimer)}
+            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-50">
+              <div
+                className="flex items-center gap-3 px-6 py-2 rounded-full text-white shadow-2xl backdrop-blur-md border border-white/10"
+                style={{
+                  backgroundColor: "#1B2138", // Dark navy/indigo background
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.4)",
+                  fontFamily: "monospace", // Or a nice tabular font if available
+                }}
+              >
+                <div className="text-pink-400">
+                  <StopwatchIcon size={20} className="stroke-[2.5px]" />
+                </div>
+                <span className="text-2xl font-bold tracking-widest tabular-nums">
+                  {formatTime(manualTimer)}
+                </span>
               </div>
             </div>
           )}
