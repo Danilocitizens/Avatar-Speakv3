@@ -106,22 +106,8 @@ const LiveAvatarSessionComponent: React.FC<{
     mainIntervalRef.current = setInterval(() => {
       setMainTimerValue((prev) => {
         if (prev === null) return null;
-
-        // Stopwatch Mode (0 -> Up)
-        if (initialTimerSeconds === 0) {
-          return prev + 1;
-        }
-
-        // Countdown Mode (>0 -> Down)
-        if (prev <= 0) {
-          if (mainIntervalRef.current) {
-            clearInterval(mainIntervalRef.current);
-            mainIntervalRef.current = null;
-          }
-          setMainTimerRunning(false);
-          return 0;
-        }
-        return prev - 1;
+        // User requested: Always count UP
+        return prev + 1;
       });
     }, 1000);
   };
@@ -169,23 +155,8 @@ const LiveAvatarSessionComponent: React.FC<{
 
     manualIntervalRef.current = setInterval(() => {
       setManualTimer((prev) => {
-        // Match Main Timer Logic
-
-        // Stopwatch Mode (0 -> Up)
-        if (initialTimerSeconds === 0 || !initialTimerSeconds) {
-          return prev + 1;
-        }
-
-        // Countdown Mode (>0 -> Down)
-        if (prev <= 0) {
-          if (manualIntervalRef.current) {
-            clearInterval(manualIntervalRef.current);
-            manualIntervalRef.current = null;
-          }
-          setManualTimerRunning(false);
-          return 0;
-        }
-        return prev - 1;
+        // User requested: Always count UP
+        return prev + 1;
       });
     }, 1000);
   };
