@@ -145,7 +145,8 @@ const useTimerState = (
   sessionRef: React.RefObject<LiveAvatarSession>,
   initialSeconds?: number | null,
 ) => {
-  console.log("📊 Timer initialized with:", initialSeconds);
+  // Debug logic for tracing re-renders
+  // console.log("📊 useTimerState Render. initialSeconds:", initialSeconds);
 
   // 1. Estado del Timer
   const [timerValue, setTimerValue] = useState<number>(0);
@@ -155,8 +156,28 @@ const useTimerState = (
   // 3. Referencia al Interval
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Ref para guardar el valor anterior y evitar resets innecesarios
+  const previousInitialSecondsRef = useRef<number | null | undefined>(
+    undefined,
+  );
+
   // 2. Valor Inicial & 6. Función de Reset
   useEffect(() => {
+    // GUARD: Si el valor no ha cambiado realmente, NO HACER NADA.
+    // Esto protege contra re-renders o efectos dobles en StrictMode que matarían el timer.
+    if (initialSeconds === previousInitialSecondsRef.current) {
+      // console.log("🛡️ Guard active: initialSeconds unchanged. Skipping reset.");
+      return;
+    }
+
+    console.log(
+      "♻️ REAL CHANGE in initialSeconds. Resetting timer. Old:",
+      previousInitialSecondsRef.current,
+      "New:",
+      initialSeconds,
+    );
+    previousInitialSecondsRef.current = initialSeconds;
+
     const startValue = typeof initialSeconds === "number" ? initialSeconds : 0;
     setTimerValue(startValue);
 
@@ -171,6 +192,7 @@ const useTimerState = (
   // 8. Cleanup global
   useEffect(() => {
     return () => {
+      // console.log("💀 useTimerState Unmount/Cleanup");
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
@@ -185,7 +207,7 @@ const useTimerState = (
     setIsRunning(true);
 
     intervalRef.current = setInterval(() => {
-      // console.log("⏱️ TICK"); // Removed spammy log
+      // console.log("⏱️ TICK");
       setTimerValue((prevValue) => {
         if (initialSeconds === 0) {
           // Stopwatch
@@ -215,8 +237,6 @@ const useTimerState = (
       typeof initialSeconds === "number" &&
       initialSeconds !== null
     ) {
-      console.log("👂 Listener registered for USER_SPEAK_STARTED");
-
       const handleUserSpeakStart = () => {
         console.log("🎤 USER_SPEAK_STARTED event fired!");
         startTimer();
@@ -229,7 +249,7 @@ const useTimerState = (
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionRef, initialSeconds, startTimer]); // Added startTimer dependency
+  }, [sessionRef, initialSeconds, startTimer]);
 
   return {
     timerValue: typeof initialSeconds === "number" ? timerValue : null,
