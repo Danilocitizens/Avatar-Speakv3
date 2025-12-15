@@ -141,8 +141,8 @@ const useTimerState = (
   const [timerValue, setTimerValue] = useState<number | null>(null);
   const [hasTimerStarted, setHasTimerStarted] = useState(false);
 
+  // 1. Initialization Effect
   useEffect(() => {
-    console.warn("useTimerState - initialSeconds:", initialSeconds);
     if (typeof initialSeconds === "number" && initialSeconds !== null) {
       setTimerValue(initialSeconds);
     } else {
@@ -151,6 +151,7 @@ const useTimerState = (
     setHasTimerStarted(false);
   }, [initialSeconds]);
 
+  // 2. Event Listener Effect
   useEffect(() => {
     const session = sessionRef.current;
     if (
@@ -158,61 +159,46 @@ const useTimerState = (
       typeof initialSeconds === "number" &&
       initialSeconds !== null
     ) {
-      console.warn("Attaching listeners. hasTimerStarted:", hasTimerStarted);
-
       const handleUserSpeakStart = () => {
-        console.warn("EVENT: USER_SPEAK_STARTED fired!");
         if (!hasTimerStarted) {
-          console.warn("Starting timer now!");
           setHasTimerStarted(true);
         }
       };
 
-      // Also listening to AVATAR_START_TALKING just in case
-      const handleAvatarSpeakStart = () => {
-        console.warn("EVENT: AVATAR_SPEAK_STARTED fired! (Debug)");
-      };
-
-      // We only listen if timer hasn't started yet
       if (!hasTimerStarted) {
         session.on(AgentEventsEnum.USER_SPEAK_STARTED, handleUserSpeakStart);
-        session.on(
-          AgentEventsEnum.AVATAR_SPEAK_STARTED,
-          handleAvatarSpeakStart,
-        );
       }
+
       return () => {
         session.off(AgentEventsEnum.USER_SPEAK_STARTED, handleUserSpeakStart);
-        session.off(
-          AgentEventsEnum.AVATAR_SPEAK_STARTED,
-          handleAvatarSpeakStart,
-        );
       };
     }
   }, [sessionRef, initialSeconds, hasTimerStarted]);
 
+  // 3. Timer Interval Effect
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (hasTimerStarted && timerValue !== null) {
-      // Check if we should count up (stopwatch) or down (timer)
-      // We rely on initialSeconds to determine the mode.
+
+    if (hasTimerStarted) {
       const isStopwatch = initialSeconds === 0;
 
-      if (isStopwatch || timerValue > 0) {
-        interval = setInterval(() => {
-          setTimerValue((prev) => {
-            if (prev === null) return null;
-            if (isStopwatch) {
-              return prev + 1;
-            } else {
-              return prev > 0 ? prev - 1 : 0;
-            }
-          });
-        }, 1000);
-      }
+      interval = setInterval(() => {
+        setTimerValue((prev) => {
+          if (prev === null) return null;
+          if (isStopwatch) {
+            return prev + 1;
+          } else {
+            return prev > 0 ? prev - 1 : 0;
+          }
+        });
+      }, 1000);
     }
-    return () => clearInterval(interval);
-  }, [hasTimerStarted, timerValue, initialSeconds]);
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+    // CRITICAL dependency: no timerValue here!
+  }, [hasTimerStarted, initialSeconds]);
 
   return {
     timerValue,
