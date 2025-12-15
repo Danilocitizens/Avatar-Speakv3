@@ -92,23 +92,29 @@ const LiveAvatarDemoContent = () => {
         return;
       }
       const { session_token } = await res.json();
-      setSessionToken(session_token);
-      setMode("FULL");
 
-      // Parse inicio_seg
+      // Parse inicio_seg BEFORE setting session token
+      let parsedTimer: number | null = null;
       if (
         webhookData.inicio_seg &&
         webhookData.inicio_seg !== "no disponible"
       ) {
+        console.warn("webhookData.inicio_seg found:", webhookData.inicio_seg);
         const parsed = parseInt(webhookData.inicio_seg, 10);
         if (!isNaN(parsed)) {
-          setTimerSeconds(parsed);
+          console.warn("Parsed timerSeconds:", parsed);
+          parsedTimer = parsed;
         } else {
-          setTimerSeconds(null);
+          console.warn("Failed to parse timerSeconds, setting null");
         }
       } else {
-        setTimerSeconds(null);
+        console.warn("inicio_seg not found or no disponible");
       }
+
+      setTimerSeconds(parsedTimer);
+      setSessionToken(session_token);
+      setMode("FULL");
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.message || "Error al iniciar sesión");
