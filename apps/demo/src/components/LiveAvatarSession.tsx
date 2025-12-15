@@ -64,62 +64,6 @@ const LiveAvatarSessionComponent: React.FC<{
     }
   }, [isStreamReady, isActive, start]);
 
-  // --- MAIN TIMER LOGIC (Imitating Manual Timer) ---
-  const [mainTimerValue, setMainTimerValue] = React.useState<number | null>(
-    null,
-  );
-  const [mainTimerRunning, setMainTimerRunning] = React.useState(false);
-  const mainIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Initialize Timer
-  useEffect(() => {
-    if (typeof initialTimerSeconds === "number") {
-      setMainTimerValue(initialTimerSeconds);
-    }
-  }, [initialTimerSeconds]);
-
-  // Listener for Start
-  useEffect(() => {
-    const session = sessionRef.current;
-    if (session && typeof initialTimerSeconds === "number") {
-      const handleUserSpeakStart = () => {
-        if (!mainIntervalRef.current && !mainTimerRunning) {
-          console.log("🎤 USER_SPEAK_STARTED (Local) -> Starting Main Timer");
-          startMainTimer();
-        }
-      };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      session.on("user_speak_started" as any, handleUserSpeakStart);
-      return () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        session.off("user_speak_started" as any, handleUserSpeakStart);
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionRef, initialTimerSeconds]);
-
-  const startMainTimer = () => {
-    if (mainIntervalRef.current) return;
-
-    setMainTimerRunning(true);
-
-    mainIntervalRef.current = setInterval(() => {
-      setMainTimerValue((prev) => {
-        if (prev === null) return null;
-        // User requested: Always count UP
-        return prev + 1;
-      });
-    }, 1000);
-  };
-
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      if (mainIntervalRef.current) clearInterval(mainIntervalRef.current);
-    };
-  }, []);
-  // -------------------------------------------------
-
   // Local manual stopwatch hook logic (Requested by user to imitate)
   const [manualTimer, setManualTimer] = React.useState(0);
   const [manualTimerRunning, setManualTimerRunning] = React.useState(false);
@@ -186,21 +130,6 @@ const LiveAvatarSessionComponent: React.FC<{
             playsInline
             className="w-full h-full object-cover"
           />
-          {/* Main Context Timer Display (Now Local) */}
-          {typeof initialTimerSeconds === "number" &&
-            mainTimerValue !== null && (
-              <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
-                <div
-                  className="bg-black/40 backdrop-blur-md border border-white/20 text-white px-6 py-2 rounded-full font-mono font-bold text-xl md:text-2xl shadow-lg"
-                  style={{
-                    textShadow: "0 2px 4px rgba(0,0,0,0.5)",
-                    boxShadow: "0 0 15px rgba(0,0,0,0.3)",
-                  }}
-                >
-                  {formatTime(mainTimerValue)}
-                </div>
-              </div>
-            )}
 
           {/* New Independent Manual Stopwatch (Requested) */}
           {manualTimerRunning && (
