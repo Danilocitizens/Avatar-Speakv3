@@ -122,6 +122,21 @@ const LiveAvatarSessionComponent: React.FC<{
           <h1 className="text-base md:text-xl font-black uppercase tracking-wider text-white">
             ENTRENADOR AI
           </h1>
+
+          {/* Mobile Header Timer (New Position) */}
+          {manualTimerRunning && (
+            <div className="ml-auto flex items-center gap-2 md:hidden">
+              <div className="bg-[#1B2138] border border-white/10 rounded-full px-3 py-1 flex items-center gap-2 shadow-sm">
+                <StopwatchIcon
+                  size={16}
+                  className="text-pink-400 stroke-[2.5px]"
+                />
+                <span className="text-white font-mono font-bold text-sm tracking-wide tabular-nums">
+                  {formatTime(manualTimer)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Avatar Video Container */}
@@ -135,7 +150,7 @@ const LiveAvatarSessionComponent: React.FC<{
 
           {/* New Independent Manual Stopwatch (Requested) */}
           {manualTimerRunning && (
-            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-50">
+            <div className="hidden md:flex absolute top-8 left-1/2 transform -translate-x-1/2 z-50">
               <div
                 className="flex items-center gap-3 px-6 py-2 rounded-full text-white shadow-2xl backdrop-blur-md border border-white/10"
                 style={{
