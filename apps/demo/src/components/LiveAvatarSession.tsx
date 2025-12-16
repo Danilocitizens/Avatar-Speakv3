@@ -223,6 +223,7 @@ const LiveAvatarSessionComponent: React.FC<{
                       body: JSON.stringify({
                         Estado: "Terminar ejercicio",
                         id_interaccion: idInteraction,
+                        tiempo_consumido: manualTimer,
                       }),
                     },
                   );
@@ -256,6 +257,7 @@ const LiveAvatarSessionComponent: React.FC<{
                     body: JSON.stringify({
                       Estado: "Terminar ejercicio",
                       id_interaccion: idInteraction,
+                      tiempo_consumido: manualTimer,
                     }),
                   },
                 );
