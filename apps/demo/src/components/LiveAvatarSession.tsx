@@ -60,7 +60,9 @@ const LiveAvatarSessionComponent: React.FC<{
 
   useEffect(() => {
     if (isStreamReady && !isActive) {
-      start();
+      start().catch((err) => {
+        console.error("Failed to start voice chat:", err);
+      });
     }
   }, [isStreamReady, isActive, start]);
 
@@ -331,6 +333,7 @@ export const LiveAvatarSession: React.FC<{
 }) => {
   return (
     <LiveAvatarContextProvider
+      key={sessionAccessToken} // Force remount/new session if token changes
       sessionAccessToken={sessionAccessToken}
       idInteraction={idInteraction}
       onSessionComplete={onSessionComplete}
