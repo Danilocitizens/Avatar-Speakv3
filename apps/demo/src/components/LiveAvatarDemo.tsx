@@ -82,6 +82,7 @@ const LiveAvatarDemoContent = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           knowledge_id: dynamicKnowledgeId,
+          avatar_id: webhookData.avatar_id,
           voice_id: webhookData.voice_id,
         }),
       });

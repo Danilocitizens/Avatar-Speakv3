@@ -1,23 +1,20 @@
-import {
-  API_KEY,
-  API_URL,
-  AVATAR_ID,
-  VOICE_ID,
-  // CONTEXT_ID, // Removed since it's commented out in secrets.ts
-  LANGUAGE,
-} from "../secrets";
+import { API_KEY, API_URL, LANGUAGE } from "../secrets";
 
 export async function POST(request: Request) {
   let session_token = "";
   let session_id = "";
   try {
     const body = await request.json().catch(() => ({}));
-    const { knowledge_id, voice_id } = body;
-    console.warn("Start Session Params:", { knowledge_id, voice_id });
+    const { knowledge_id, avatar_id, voice_id } = body;
+    console.warn("Start Session Params:", {
+      knowledge_id,
+      avatar_id,
+      voice_id,
+    });
 
-    if (!knowledge_id) {
+    if (!knowledge_id || !avatar_id || !voice_id) {
       throw new Error(
-        "Missing knowledge_id (CONTEXT_ID). Webhook must provide it.",
+        "Missing required params (knowledge_id, avatar_id, voice_id). Webhook must provide them.",
       );
     }
 
@@ -29,10 +26,10 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         mode: "FULL",
-        avatar_id: AVATAR_ID,
+        avatar_id: avatar_id,
         avatar_persona: {
-          voice_id: voice_id || VOICE_ID,
-          context_id: knowledge_id, // Must be provided dynamically now
+          voice_id: voice_id,
+          context_id: knowledge_id,
           language: LANGUAGE,
         },
       }),
