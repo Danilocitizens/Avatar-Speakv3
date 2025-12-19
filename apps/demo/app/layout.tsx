@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Entrenador AI",
   icons: {
-    icon: "/heygen-logo.ico",
+    icon: "/entrenador-favicon.ico",
   },
 };
 
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-zinc-900 flex flex-col min-h-screen text-white justify-center items-center">
+      <body className="bg-white flex flex-col min-h-screen text-gray-900 justify-center items-center">
         {children}
       </body>
     </html>
