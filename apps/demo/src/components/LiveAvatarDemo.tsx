@@ -138,9 +138,8 @@ const LiveAvatarDemoContent = () => {
 
   return (
     <div
-      className="w-full h-full flex flex-col items-center justify-center"
+      className="w-full h-full flex flex-col items-center justify-center bg-white"
       style={{
-        background: "linear-gradient(135deg, #4169E1 0%, #1E3A8A 100%)",
         height: "100vh",
         overflow: "hidden",
       }}
@@ -148,67 +147,44 @@ const LiveAvatarDemoContent = () => {
       {!sessionToken ? (
         <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4 md:px-8">
           {/* Card Container */}
-          <div
-            className="w-full rounded-2xl p-6 md:p-12 flex flex-col items-center justify-center gap-6 md:gap-8"
-            style={{
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(10px)",
-            }}
-          >
+          <div className="w-full rounded-2xl p-6 md:p-12 flex flex-col items-center justify-center gap-6 md:gap-8">
             {showEndScreen ? (
               <>
                 <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-4">
-                  <h1 className="text-white text-xl md:text-3xl font-bold tracking-wide">
+                  <h1 className="text-gray-900 text-xl md:text-3xl font-bold tracking-wide">
                     ENTRENADOR AI
                   </h1>
                 </div>
-                <div className="bg-white/10 px-6 md:px-8 py-4 md:py-6 rounded-xl border border-white/5 backdrop-blur-md">
-                  <p className="text-base md:text-xl text-white font-medium text-center leading-relaxed">
+                <div className="bg-gray-50 px-6 md:px-8 py-4 md:py-6 rounded-xl border border-gray-200">
+                  <p className="text-base md:text-xl text-gray-800 font-medium text-center leading-relaxed">
                     Gracias. Ahora vuelve a WhatsApp para continuar
                   </p>
                 </div>
               </>
             ) : showNoExerciseScreen ? (
               <>
-                <h2 className="text-xl md:text-2xl font-bold text-white text-center">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center">
                   Todavía no tienes un ejercicio
                 </h2>
-                <p className="text-base md:text-lg text-white/70 text-center">
+                <p className="text-base md:text-lg text-gray-600 text-center">
                   Puedes volver a WhatsApp para continuar
                 </p>
               </>
             ) : (
               <>
-                {/* Header with Icon and Title */}
-                <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-4">
-                  <div
-                    className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #FF1493 0%, #FF69B4 100%)",
-                      boxShadow: "0 0 20px rgba(255, 20, 147, 0.5)",
-                    }}
-                  >
-                    <svg
-                      className="w-5 h-5 md:w-6 md:h-6"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="8"
-                        stroke="white"
-                        strokeWidth="2"
-                      />
-                      <circle cx="12" cy="12" r="3" fill="white" />
-                    </svg>
-                  </div>
-                  <h1 className="text-white text-xl md:text-3xl font-bold tracking-wide">
-                    ENTRENADOR AI
-                  </h1>
+                {/* Header with Logos */}
+                <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-4 md:mb-8">
+                  <img
+                    src="/Entrenador.ai-logo.png"
+                    alt="Entrenador.ai"
+                    className="h-8 md:h-12 object-contain"
+                  />
+                  <div className="hidden md:block w-px h-8 md:h-10 bg-gray-300"></div>
+                  <img
+                    src="/Inteliventa-logo.png"
+                    alt="Inteliventa"
+                    className="h-6 md:h-10 object-contain"
+                  />
                 </div>
 
                 {/* Error Message */}
@@ -222,17 +198,12 @@ const LiveAvatarDemoContent = () => {
                 {!isStarting ? (
                   <button
                     onClick={handleStart}
-                    className="min-h-[48px] px-6 md:px-8 py-3 rounded-lg font-semibold text-white transition-all duration-200 hover:scale-105 active:scale-95 touch-manipulation text-sm md:text-base"
-                    style={{
-                      background: "rgba(59, 130, 246, 0.8)",
-                      border: "1px solid rgba(96, 165, 250, 0.5)",
-                      boxShadow: "0 4px 15px rgba(59, 130, 246, 0.3)",
-                    }}
+                    className="min-h-[48px] px-6 md:px-8 py-3 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 touch-manipulation text-sm md:text-base"
                   >
                     Empezar ejercicio
                   </button>
                 ) : (
-                  <div className="text-white text-base md:text-lg animate-pulse">
+                  <div className="text-gray-600 text-base md:text-lg animate-pulse">
                     Iniciando sesión...
                   </div>
                 )}
@@ -256,7 +227,7 @@ const LiveAvatarDemoContent = () => {
 
 export const LiveAvatarDemo = () => {
   return (
-    <Suspense fallback={<div className="text-white">Cargando...</div>}>
+    <Suspense fallback={<div className="text-gray-600">Cargando...</div>}>
       <LiveAvatarDemoContent />
     </Suspense>
   );

@@ -115,13 +115,18 @@ const LiveAvatarSessionComponent: React.FC<{
     <div className="w-full h-full flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-8 p-4 md:py-8 md:px-8 min-h-0 max-h-full overflow-y-auto md:overflow-hidden relative">
       {/* Left Column: Header + Avatar */}
       <div className="flex-shrink-0 md:flex-1 flex flex-col gap-3 md:gap-4 min-h-0">
-        <div className="flex flex-row items-center gap-2 md:gap-3">
-          <div className="p-1.5 md:p-2 bg-pink-500/20 rounded-full">
-            <TargetIcon className="text-pink-500 w-5 h-5 md:w-6 md:h-6" />
-          </div>
-          <h1 className="text-base md:text-xl font-black uppercase tracking-wider text-white">
-            ENTRENADOR AI
-          </h1>
+        <div className="flex flex-row items-center gap-4 md:gap-6">
+          <img
+            src="/Entrenador.ai-logo.png"
+            alt="Entrenador.ai"
+            className="h-8 object-contain"
+          />
+          <div className="w-px h-6 bg-gray-300"></div>
+          <img
+            src="/Inteliventa-logo.png"
+            alt="Inteliventa"
+            className="h-6 object-contain"
+          />
 
           {/* Mobile Header Timer (New Position) */}
           {manualTimerRunning && (
@@ -140,7 +145,7 @@ const LiveAvatarSessionComponent: React.FC<{
         </div>
 
         {/* Avatar Video Container */}
-        <div className="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-black/20 backdrop-blur-sm border border-white/10 w-full max-h-[50vh] md:max-h-none md:flex-1 aspect-video md:aspect-auto">
+        <div className="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-gray-50 border border-gray-200 w-full max-h-[50vh] md:max-h-none md:flex-1 aspect-video md:aspect-auto">
           <video
             ref={videoRef}
             autoPlay
@@ -170,8 +175,8 @@ const LiveAvatarSessionComponent: React.FC<{
           )}
 
           {sessionState === SessionState.DISCONNECTED && (
-            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md text-white p-4 md:p-6">
-              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-3 md:mb-4">
+            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md text-gray-900 p-4 md:p-6">
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-red-100 flex items-center justify-center mb-3 md:mb-4">
                 <svg
                   className="w-6 h-6 md:w-8 md:h-8"
                   viewBox="0 0 24 24"
@@ -196,12 +201,12 @@ const LiveAvatarSessionComponent: React.FC<{
               <h3 className="text-lg md:text-xl font-bold mb-2">
                 Sesión Finalizada
               </h3>
-              <p className="text-white/60 mb-4 md:mb-6 text-center max-w-xs text-sm md:text-base">
+              <p className="text-gray-500 mb-4 md:mb-6 text-center max-w-xs text-sm md:text-base">
                 La conexión se ha perdido o no se pudo establecer.
               </p>
               <button
                 onClick={onSessionStopped}
-                className="min-h-[44px] px-5 md:px-6 py-2 bg-white text-black font-semibold rounded-full hover:bg-gray-100 transition-colors touch-manipulation text-sm md:text-base"
+                className="min-h-[44px] px-5 md:px-6 py-2 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-colors touch-manipulation text-sm md:text-base"
               >
                 Volver al Inicio
               </button>
@@ -278,12 +283,12 @@ const LiveAvatarSessionComponent: React.FC<{
       </div>
 
       {/* Transcription/Chat Area */}
-      <div className="flex-shrink-0 md:flex-shrink w-full md:w-[400px] flex flex-col rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-md border border-white/10 min-h-0 max-h-[40vh] md:max-h-none">
-        <div className="p-4 md:p-6 border-b border-white/10 bg-white/5">
-          <h2 className="text-lg md:text-2xl font-bold text-white tracking-wide">
+      <div className="flex-shrink-0 md:flex-shrink w-full md:w-[400px] flex flex-col rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-white border border-gray-200 min-h-0 max-h-[40vh] md:max-h-none">
+        <div className="p-4 md:p-6 border-b border-gray-100 bg-gray-50">
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900 tracking-wide">
             Transcripción en vivo
           </h2>
-          <p className="text-white/60 text-xs md:text-sm mt-1">Escuchando...</p>
+          <p className="text-gray-500 text-xs md:text-sm mt-1">Escuchando...</p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3 md:space-y-4">
@@ -294,7 +299,7 @@ const LiveAvatarSessionComponent: React.FC<{
                 className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
               >
                 <span
-                  className={`text-xs mb-1 px-2 ${msg.sender === "user" ? "text-blue-300" : "text-pink-300"}`}
+                  className={`text-xs mb-1 px-2 ${msg.sender === "user" ? "text-blue-600" : "text-pink-600"}`}
                 >
                   {msg.sender === "user" ? "Tú" : "Avatar"}
                 </span>
@@ -310,7 +315,7 @@ const LiveAvatarSessionComponent: React.FC<{
               </div>
             ))}
           {messages && messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-white/30 space-y-3 md:space-y-4">
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 space-y-3 md:space-y-4">
               <svg
                 className="w-10 h-10 md:w-12 md:h-12"
                 viewBox="0 0 24 24"
