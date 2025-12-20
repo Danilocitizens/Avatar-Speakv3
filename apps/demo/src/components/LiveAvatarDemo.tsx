@@ -3,6 +3,7 @@
 import { useState, Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { LiveAvatarSession } from "./LiveAvatarSession";
+import { translations, Language } from "../constants/translations";
 
 const LiveAvatarDemoContent = () => {
   const [sessionToken, setSessionToken] = useState("");
@@ -14,27 +15,54 @@ const LiveAvatarDemoContent = () => {
   const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const idInteraction = searchParams.get("id");
+  const [currentLanguage, setCurrentLanguage] = useState<Language>("es");
+  const t = translations[currentLanguage];
 
   // Automatic webhook trigger on page load (Requested feature)
   useEffect(() => {
     // Define the async function inside the effect
     const triggerOnLoad = async () => {
       try {
-        await fetch("https://devwebhook.inteliventa.ai/webhook/liveavatar", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_interaccion: idInteraction || "" }),
-        });
+        const response = await fetch(
+          "https://devwebhook.inteliventa.ai/webhook/liveavatar",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_interaccion: idInteraction || "" }),
+          },
+        );
+
+        const webhookData = await response.json();
         // console.log("Automatic entrance webhook fired for:", idInteraction);
+
+        // Handle Language from Webhook
+        if (webhookData.idioma) {
+          const lang = webhookData.idioma.toLowerCase();
+          if (lang.includes("portugués") || lang.includes("portugal")) {
+            setCurrentLanguage("pt");
+          } else if (lang.includes("francés") || lang.includes("frances")) {
+            setCurrentLanguage("fr");
+          } else if (lang.includes("alemán") || lang.includes("aleman")) {
+            setCurrentLanguage("de");
+          } else if (
+            lang.includes("inglés") ||
+            lang.includes("ingles") ||
+            lang === "en" ||
+            lang.includes("americano")
+          ) {
+            setCurrentLanguage("en");
+          } else if (lang.includes("italiano")) {
+            setCurrentLanguage("it");
+          } else {
+            setCurrentLanguage("es"); // Default
+          }
+        }
       } catch (err) {
         console.error("Failed to fire automatic entrance webhook:", err);
       }
     };
 
     triggerOnLoad();
-    // Depends on idInteraction so if it changes (or on mount) it fires.
-    // If we want strictly ONLY on mount, we can use empty array, but usually idInteraction is key.
-    // Given the request "cada vez que el usuario entre", triggering on mount is sufficient.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -135,7 +163,7 @@ const LiveAvatarDemoContent = () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      setError(error.message || "Error al iniciar sesión");
+      setError(error.message || t.genericError);
       setIsStarting(false);
     }
   };
@@ -145,12 +173,6 @@ const LiveAvatarDemoContent = () => {
     setSessionToken("");
     setIsStarting(false);
     setShowNoExerciseScreen(false);
-    // Note: Do not reset showEndScreen here if it was set by webhook,
-    // but usually onStopped is called by "Finalizar" button too.
-    // If webhook triggered end, showEndScreen is true.
-    // If manual stop, showEndScreen should probably be false?
-    // For now, only reset if we want to go back to start.
-    // However, if we are showing End Screen, we stay there.
   };
 
   const onSessionComplete = () => {
@@ -175,22 +197,22 @@ const LiveAvatarDemoContent = () => {
               <>
                 <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-4">
                   <h1 className="text-gray-900 text-xl md:text-3xl font-bold tracking-wide">
-                    ENTRENADOR AI
+                    {t.title}
                   </h1>
                 </div>
                 <div className="bg-gray-50 px-6 md:px-8 py-4 md:py-6 rounded-xl border border-gray-200">
                   <p className="text-base md:text-xl text-gray-800 font-medium text-center leading-relaxed">
-                    Gracias. Ahora vuelve a WhatsApp para continuar
+                    {t.thankYou}
                   </p>
                 </div>
               </>
             ) : showNoExerciseScreen ? (
               <>
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center">
-                  Todavía no tienes un ejercicio
+                  {t.noExerciseTitle}
                 </h2>
                 <p className="text-base md:text-lg text-gray-600 text-center">
-                  Puedes volver a WhatsApp para continuar
+                  {t.returnToWhatsapp}
                 </p>
               </>
             ) : (
@@ -223,11 +245,11 @@ const LiveAvatarDemoContent = () => {
                     onClick={handleStart}
                     className="min-h-[48px] px-6 md:px-8 py-3 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 touch-manipulation text-sm md:text-base"
                   >
-                    Empezar ejercicio
+                    {t.startConnection}
                   </button>
                 ) : (
                   <div className="text-gray-600 text-base md:text-lg animate-pulse">
-                    Iniciando sesión...
+                    {t.starting}
                   </div>
                 )}
               </>
@@ -242,6 +264,7 @@ const LiveAvatarDemoContent = () => {
           onSessionComplete={onSessionComplete}
           idInteraction={idInteraction || ""}
           initialTimerSeconds={timerSeconds}
+          language={currentLanguage}
         />
       )}
     </div>

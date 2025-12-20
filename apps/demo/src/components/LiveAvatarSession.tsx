@@ -10,6 +10,7 @@ import {
 } from "../liveavatar";
 import { SessionState } from "@heygen/liveavatar-web-sdk";
 import { TargetIcon, StopwatchIcon } from "./Icons";
+import { translations, Language } from "../constants/translations";
 
 // Helper for formatting time
 const formatTime = (seconds: number) => {
@@ -24,13 +25,16 @@ const LiveAvatarSessionComponent: React.FC<{
   onSessionComplete?: () => void;
   idInteraction: string;
   initialTimerSeconds?: number | null;
+  language: Language;
 }> = ({
   mode: _mode,
   onSessionStopped,
   onSessionComplete,
   idInteraction,
   initialTimerSeconds,
+  language,
 }) => {
+  const t = translations[language];
   const {
     sessionState,
     isStreamReady,
@@ -199,16 +203,16 @@ const LiveAvatarSessionComponent: React.FC<{
                 </svg>
               </div>
               <h3 className="text-lg md:text-xl font-bold mb-2">
-                Sesión Finalizada
+                {t.sessionEnded}
               </h3>
               <p className="text-gray-500 mb-4 md:mb-6 text-center max-w-xs text-sm md:text-base">
-                La conexión se ha perdido o no se pudo establecer.
+                {t.connectionLost}
               </p>
               <button
                 onClick={onSessionStopped}
                 className="min-h-[44px] px-5 md:px-6 py-2 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-colors touch-manipulation text-sm md:text-base"
               >
-                Volver al Inicio
+                {t.returnHome}
               </button>
             </div>
           )}
@@ -226,7 +230,7 @@ const LiveAvatarSessionComponent: React.FC<{
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
-                        Estado: "Terminar ejercicio",
+                        Estado: t.endSession,
                         id_interaccion: idInteraction,
                         tiempo_consumido: manualTimer,
                       }),
@@ -243,7 +247,7 @@ const LiveAvatarSessionComponent: React.FC<{
                 }
               }}
             >
-              Terminar ejercicio
+              {t.endSession}
             </button>
           </div>
         </div>
@@ -260,7 +264,7 @@ const LiveAvatarSessionComponent: React.FC<{
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                      Estado: "Terminar ejercicio",
+                      Estado: t.endSession,
                       id_interaccion: idInteraction,
                       tiempo_consumido: manualTimer,
                     }),
@@ -277,7 +281,7 @@ const LiveAvatarSessionComponent: React.FC<{
               }
             }}
           >
-            Terminar ejercicio
+            {t.endSession}
           </button>
         </div>
       </div>
@@ -286,9 +290,9 @@ const LiveAvatarSessionComponent: React.FC<{
       <div className="flex-shrink-0 md:flex-shrink w-full md:w-[400px] flex flex-col rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-white border border-gray-200 min-h-0 max-h-[40vh] md:max-h-none">
         <div className="p-4 md:p-6 border-b border-gray-100 bg-gray-50">
           <h2 className="text-lg md:text-2xl font-bold text-gray-900 tracking-wide">
-            Transcripción en vivo
+            {t.liveTranscription}
           </h2>
-          <p className="text-gray-500 text-xs md:text-sm mt-1">Escuchando...</p>
+          <p className="text-gray-500 text-xs md:text-sm mt-1">{t.listening}</p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3 md:space-y-4">
@@ -301,7 +305,7 @@ const LiveAvatarSessionComponent: React.FC<{
                 <span
                   className={`text-xs mb-1 px-2 ${msg.sender === "user" ? "text-blue-600" : "text-pink-600"}`}
                 >
-                  {msg.sender === "user" ? "Tú" : "Avatar"}
+                  {msg.sender === "user" ? t.you : t.avatar}
                 </span>
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 md:px-5 py-2 md:py-3 text-sm md:text-base ${
@@ -328,7 +332,7 @@ const LiveAvatarSessionComponent: React.FC<{
                 <path d="M8 10h8" />
               </svg>
               <p className="text-sm md:text-base">
-                La conversación aparecerá aquí
+                {t.conversationPlaceholder}
               </p>
             </div>
           )}
@@ -345,6 +349,7 @@ export const LiveAvatarSession: React.FC<{
   onSessionComplete?: () => void;
   idInteraction: string;
   initialTimerSeconds?: number | null;
+  language: Language;
 }> = ({
   mode,
   sessionAccessToken,
@@ -352,6 +357,7 @@ export const LiveAvatarSession: React.FC<{
   onSessionComplete,
   idInteraction,
   initialTimerSeconds,
+  language,
 }) => {
   return (
     <LiveAvatarContextProvider
@@ -367,6 +373,7 @@ export const LiveAvatarSession: React.FC<{
         onSessionComplete={onSessionComplete}
         idInteraction={idInteraction}
         initialTimerSeconds={initialTimerSeconds}
+        language={language}
       />
     </LiveAvatarContextProvider>
   );
