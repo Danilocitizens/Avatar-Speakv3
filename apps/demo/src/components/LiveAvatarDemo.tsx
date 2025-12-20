@@ -16,6 +16,7 @@ const LiveAvatarDemoContent = () => {
   const searchParams = useSearchParams();
   const idInteraction = searchParams.get("id");
   const [currentLanguage, setCurrentLanguage] = useState<Language>("es");
+  const [isWebhookReady, setIsWebhookReady] = useState(false);
   const t = translations[currentLanguage];
 
   // Automatic webhook trigger on page load (Requested feature)
@@ -59,6 +60,8 @@ const LiveAvatarDemoContent = () => {
         }
       } catch (err) {
         console.error("Failed to fire automatic entrance webhook:", err);
+      } finally {
+        setIsWebhookReady(true);
       }
     };
 
@@ -240,7 +243,11 @@ const LiveAvatarDemoContent = () => {
                 )}
 
                 {/* Start Button */}
-                {!isStarting ? (
+                {!isWebhookReady ? (
+                  <div className="text-gray-500 text-sm md:text-base animate-pulse">
+                    {t.loading}
+                  </div>
+                ) : !isStarting ? (
                   <button
                     onClick={handleStart}
                     className="min-h-[48px] px-6 md:px-8 py-3 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 touch-manipulation text-sm md:text-base"
