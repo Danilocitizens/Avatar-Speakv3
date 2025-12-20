@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { LiveAvatarSession } from "./LiveAvatarSession";
 
@@ -14,6 +14,29 @@ const LiveAvatarDemoContent = () => {
   const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const idInteraction = searchParams.get("id");
+
+  // Automatic webhook trigger on page load (Requested feature)
+  useEffect(() => {
+    // Define the async function inside the effect
+    const triggerOnLoad = async () => {
+      try {
+        await fetch("https://devwebhook.inteliventa.ai/webhook/liveavatar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_interaccion: idInteraction || "" }),
+        });
+        // console.log("Automatic entrance webhook fired for:", idInteraction);
+      } catch (err) {
+        console.error("Failed to fire automatic entrance webhook:", err);
+      }
+    };
+
+    triggerOnLoad();
+    // Depends on idInteraction so if it changes (or on mount) it fires.
+    // If we want strictly ONLY on mount, we can use empty array, but usually idInteraction is key.
+    // Given the request "cada vez que el usuario entre", triggering on mount is sufficient.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleStart = async () => {
     setIsStarting(true);
