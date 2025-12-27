@@ -1,15 +1,16 @@
-import { API_KEY, API_URL, LANGUAGE } from "../secrets";
+import { API_KEY, API_URL } from "../secrets";
 
 export async function POST(request: Request) {
   let session_token = "";
   let session_id = "";
   try {
     const body = await request.json().catch(() => ({}));
-    const { knowledge_id, avatar_id, voice_id } = body;
+    const { knowledge_id, avatar_id, voice_id, language } = body;
     console.warn("Start Session Params:", {
       knowledge_id,
       avatar_id,
       voice_id,
+      language,
     });
 
     if (!knowledge_id || !avatar_id || !voice_id) {
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
         avatar_persona: {
           voice_id: voice_id,
           context_id: knowledge_id,
-          language: LANGUAGE,
+          language: language,
         },
       }),
     });
