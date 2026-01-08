@@ -43,7 +43,8 @@ const LiveAvatarSessionComponent: React.FC<{
     stopSession,
     attachElement,
   } = useSession();
-  const { start, isActive } = useVoiceChat();
+  const { start, isActive, mute, unmute, isMuted, isAvatarTalking } =
+    useVoiceChat();
   const { sendMessage } = useTextChat("FULL");
   const { sessionRef } = useLiveAvatarContext(); // Get sessionRef to match manual logic with event listener
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -71,6 +72,24 @@ const LiveAvatarSessionComponent: React.FC<{
       });
     }
   }, [isStreamReady, isActive, start]);
+
+  // Auto-mute microphone when avatar is speaking on mobile to prevent echo/feedback loop
+  // Mobile browsers have less effective echo cancellation than desktop browsers
+  useEffect(() => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (!isMobile || !isActive) return;
+
+    if (isAvatarTalking && !isMuted) {
+      mute().catch((err) => {
+        console.error("Failed to mute during avatar speech:", err);
+      });
+    } else if (!isAvatarTalking && isMuted) {
+      unmute().catch((err) => {
+        console.error("Failed to unmute after avatar speech:", err);
+      });
+    }
+  }, [isAvatarTalking, isActive, isMuted, mute, unmute]);
 
   // Local manual stopwatch hook logic (Requested by user to imitate)
   const [manualTimer, setManualTimer] = React.useState(0);
