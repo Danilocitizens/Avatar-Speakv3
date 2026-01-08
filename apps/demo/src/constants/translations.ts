@@ -19,6 +19,8 @@ export const translations: Record<Language, Record<string, string>> = {
     avatar: "Avatar",
     conversationPlaceholder: "La conversación aparecerá aquí",
     genericError: "Error al iniciar sesión",
+    textInputPlaceholder: "Escribe tu mensaje...",
+    sendMessage: "Enviar",
   },
   pt: {
     title: "TREINADOR IA",
@@ -38,6 +40,8 @@ export const translations: Record<Language, Record<string, string>> = {
     avatar: "Avatar",
     conversationPlaceholder: "A conversa aparecerá aqui",
     genericError: "Erro ao iniciar sessão",
+    textInputPlaceholder: "Digite sua mensagem...",
+    sendMessage: "Enviar",
   },
   fr: {
     title: "ENTRAÎNEUR IA",
@@ -57,6 +61,8 @@ export const translations: Record<Language, Record<string, string>> = {
     avatar: "Avatar",
     conversationPlaceholder: "La conversation s'affichera ici",
     genericError: "Erreur lors de la connexion",
+    textInputPlaceholder: "Écrivez votre message...",
+    sendMessage: "Envoyer",
   },
   de: {
     title: "KI-TRAINER",
@@ -77,6 +83,8 @@ export const translations: Record<Language, Record<string, string>> = {
     avatar: "Avatar",
     conversationPlaceholder: "Das Gespräch wird hier angezeigt",
     genericError: "Fehler beim Anmelden",
+    textInputPlaceholder: "Schreiben Sie Ihre Nachricht...",
+    sendMessage: "Senden",
   },
   en: {
     title: "AI TRAINER",
@@ -96,6 +104,8 @@ export const translations: Record<Language, Record<string, string>> = {
     avatar: "Avatar",
     conversationPlaceholder: "Conversation will appear here",
     genericError: "Error signing in",
+    textInputPlaceholder: "Type your message...",
+    sendMessage: "Send",
   },
   it: {
     title: "ALLENATORE IA",
@@ -115,5 +125,7 @@ export const translations: Record<Language, Record<string, string>> = {
     avatar: "Avatar",
     conversationPlaceholder: "La conversazione apparirà qui",
     genericError: "Errore di accesso",
+    textInputPlaceholder: "Scrivi il tuo messaggio...",
+    sendMessage: "Invia",
   },
 };

@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   LiveAvatarContextProvider,
   useSession,
   useVoiceChat,
   useChatHistory,
   useLiveAvatarContext,
+  useTextChat,
 } from "../liveavatar";
 import { SessionState } from "@heygen/liveavatar-web-sdk";
 import { TargetIcon, StopwatchIcon } from "./Icons";
@@ -43,6 +44,7 @@ const LiveAvatarSessionComponent: React.FC<{
     attachElement,
   } = useSession();
   const { start, isActive } = useVoiceChat();
+  const { sendMessage } = useTextChat("FULL");
   const { sessionRef } = useLiveAvatarContext(); // Get sessionRef to match manual logic with event listener
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -114,6 +116,31 @@ const LiveAvatarSessionComponent: React.FC<{
   };
 
   const messages = useChatHistory();
+
+  // Text input state
+  const [textInput, setTextInput] = useState("");
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSendTextMessage = async () => {
+    if (!textInput.trim() || isSending) return;
+
+    setIsSending(true);
+    try {
+      await sendMessage(textInput);
+      setTextInput("");
+    } catch (error) {
+      console.error("Failed to send text message:", error);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendTextMessage();
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-8 p-4 md:py-8 md:px-8 min-h-0 max-h-full overflow-y-auto md:overflow-hidden relative">
@@ -336,6 +363,41 @@ const LiveAvatarSessionComponent: React.FC<{
               </p>
             </div>
           )}
+        </div>
+
+        {/* Text Input Section */}
+        <div className="p-3 md:p-4 border-t border-gray-100 bg-gray-50">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={t.textInputPlaceholder}
+              disabled={isSending}
+              className="flex-1 min-h-[44px] px-4 py-2 bg-white border border-gray-200 rounded-full text-sm md:text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            <button
+              onClick={handleSendTextMessage}
+              disabled={!textInput.trim() || isSending}
+              className="min-h-[44px] min-w-[44px] md:px-5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all duration-200 font-medium shadow-md touch-manipulation active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 flex items-center justify-center gap-2"
+            >
+              {/* Send Icon */}
+              <svg
+                className="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 2L11 13" />
+                <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+              </svg>
+              <span className="hidden md:inline">{t.sendMessage}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

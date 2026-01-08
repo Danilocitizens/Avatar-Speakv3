@@ -32,6 +32,7 @@ type LiveAvatarContextProps = {
   isAvatarTalking: boolean;
 
   messages: LiveAvatarSessionMessage[];
+  addUserMessage: (message: string) => void;
 
   timerValue: number | null;
   showTimer: boolean;
@@ -49,6 +50,7 @@ export const LiveAvatarContext = createContext<LiveAvatarContextProps>({
   isUserTalking: false,
   isAvatarTalking: false,
   messages: [],
+  addUserMessage: () => {},
   timerValue: null,
   showTimer: false,
 });
@@ -365,7 +367,18 @@ const useChatHistoryState = (
     }
   }, [sessionRef, idInteraction, onSessionComplete]);
 
-  return { messages };
+  const addUserMessage = useCallback((message: string) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: MessageSender.USER,
+        message,
+        timestamp: Date.now(),
+      },
+    ]);
+  }, []);
+
+  return { messages, addUserMessage };
 };
 
 export const LiveAvatarContextProvider = ({
@@ -389,7 +402,7 @@ export const LiveAvatarContextProvider = ({
 
   const { isMuted, voiceChatState } = useVoiceChatState(sessionRef);
   const { isUserTalking, isAvatarTalking } = useTalkingState(sessionRef);
-  const { messages } = useChatHistoryState(
+  const { messages, addUserMessage } = useChatHistoryState(
     sessionRef,
     idInteraction,
     onSessionComplete,
@@ -411,6 +424,7 @@ export const LiveAvatarContextProvider = ({
         isUserTalking,
         isAvatarTalking,
         messages,
+        addUserMessage,
         timerValue,
         showTimer,
       }}
