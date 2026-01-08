@@ -2,16 +2,14 @@ import { useCallback } from "react";
 import { useLiveAvatarContext } from "./context";
 
 export const useTextChat = (mode: "FULL" | "CUSTOM") => {
-  const { sessionRef, addUserMessage } = useLiveAvatarContext();
+  const { sessionRef } = useLiveAvatarContext();
 
   const sendMessage = useCallback(
     async (message: string) => {
       if (!message.trim()) return;
 
-      // Add user message to chat history immediately
-      addUserMessage(message);
-
       if (mode === "FULL") {
+        // SDK will emit USER_TRANSCRIPTION event automatically, adding message to history
         return sessionRef.current.message(message);
       } else if (mode === "CUSTOM") {
         const response = await fetch("/api/openai-chat-complete", {
@@ -28,7 +26,7 @@ export const useTextChat = (mode: "FULL" | "CUSTOM") => {
         return sessionRef.current.repeatAudio(audio);
       }
     },
-    [sessionRef, mode, addUserMessage],
+    [sessionRef, mode],
   );
 
   return {
