@@ -27,7 +27,7 @@ export const translations: Record<Language, Record<string, string>> = {
     startConnection: "Iniciar exercício",
     starting: "A iniciar sessão...",
     loading: "A carregar...",
-    thankYou: "Obrigado. Agora volte ao WhatsApp para continuar",
+    thankYou: "Obrigado. Agora pode voltar ao WhatsApp para continuar",
     noExerciseTitle: "Ainda não tem um exercício",
     returnToWhatsapp: "Pode voltar ao WhatsApp para continuar",
     sessionEnded: "Sessão Terminada",
