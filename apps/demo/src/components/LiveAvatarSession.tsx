@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   LiveAvatarContextProvider,
   useSession,
@@ -9,9 +9,11 @@ import {
   useLiveAvatarContext,
   useTextChat,
 } from "../liveavatar";
-import { SessionState } from "@heygen/liveavatar-web-sdk";
+import { SessionState, SessionEvent } from "@heygen/liveavatar-web-sdk";
 import { TargetIcon, StopwatchIcon } from "./Icons";
 import { translations, Language } from "../constants/translations";
+import { fetchWithTimeout } from "../utils/fetchWithTimeout";
+import { reportErrorToWebhook, buildErrorReport } from "../utils/errorReporter";
 
 // Helper for formatting time
 const formatTime = (seconds: number) => {
@@ -24,6 +26,7 @@ const LiveAvatarSessionComponent: React.FC<{
   mode: "FULL" | "CUSTOM";
   onSessionStopped: () => void;
   onSessionComplete?: () => void;
+  onDisconnected?: () => void;
   idInteraction: string;
   initialTimerSeconds?: number | null;
   language: Language;
@@ -31,6 +34,7 @@ const LiveAvatarSessionComponent: React.FC<{
   mode: _mode,
   onSessionStopped,
   onSessionComplete,
+  onDisconnected,
   idInteraction,
   initialTimerSeconds,
   language,
@@ -41,13 +45,86 @@ const LiveAvatarSessionComponent: React.FC<{
     isStreamReady,
     startSession,
     stopSession,
+    keepAlive,
     attachElement,
   } = useSession();
   const { start, isActive, mute, unmute, isMuted, isAvatarTalking } =
     useVoiceChat();
   const { sendMessage } = useTextChat("FULL");
-  const { sessionRef } = useLiveAvatarContext(); // Get sessionRef to match manual logic with event listener
+  const { sessionRef } = useLiveAvatarContext();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sessionStartTimeRef = useRef<number>(Date.now());
+
+  // Error toast state
+  const [errorToast, setErrorToast] = useState<string | null>(null);
+
+  // Show error toast briefly
+  const showErrorToast = useCallback((message: string) => {
+    setErrorToast(message);
+    setTimeout(() => setErrorToast(null), 4000);
+  }, []);
+
+  // Listen for SDK error events
+  useEffect(() => {
+    const session = sessionRef.current;
+    if (!session) return;
+
+    const handleSessionError = (error: { code: string; message: string }) => {
+      console.warn("[UI] Session error:", error);
+      showErrorToast(error.message);
+      reportErrorToWebhook(
+        buildErrorReport(
+          error.code,
+          error.message,
+          "connection",
+          idInteraction,
+          {
+            sessionDuration: Math.floor(
+              (Date.now() - sessionStartTimeRef.current) / 1000,
+            ),
+          },
+        ),
+      );
+    };
+
+    session.on(SessionEvent.SESSION_ERROR, handleSessionError);
+    return () => {
+      session.off(SessionEvent.SESSION_ERROR, handleSessionError);
+    };
+  }, [sessionRef, idInteraction, showErrorToast]);
+
+  // Keep-alive: ping every 30s while connected
+  useEffect(() => {
+    if (sessionState !== SessionState.CONNECTED) return;
+    const interval = setInterval(async () => {
+      try {
+        await keepAlive();
+      } catch (err) {
+        console.error("Keep-alive failed:", err);
+        reportErrorToWebhook(
+          buildErrorReport(
+            "SESSION_EXPIRED",
+            err instanceof Error ? err.message : "Keep-alive failed",
+            "session",
+            idInteraction,
+            {
+              sessionDuration: Math.floor(
+                (Date.now() - sessionStartTimeRef.current) / 1000,
+              ),
+            },
+          ),
+        );
+      }
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [sessionState, keepAlive, idInteraction]);
+
+  // Notify parent on unexpected disconnection for reconnection
+  useEffect(() => {
+    if (sessionState === SessionState.DISCONNECTED && onDisconnected) {
+      onDisconnected();
+    }
+  }, [sessionState, onDisconnected]);
 
   useEffect(() => {
     // console.warn("[UI] sessionState changed:", sessionState);
@@ -143,12 +220,34 @@ const LiveAvatarSessionComponent: React.FC<{
   const handleSendTextMessage = async () => {
     if (!textInput.trim() || isSending) return;
 
+    if (sessionState !== SessionState.CONNECTED) {
+      showErrorToast(t.connectionLost || "Connection lost");
+      return;
+    }
+
     setIsSending(true);
     try {
       await sendMessage(textInput);
       setTextInput("");
     } catch (error) {
       console.error("Failed to send text message:", error);
+      showErrorToast(t.messageFailed || "Failed to send message");
+      reportErrorToWebhook(
+        buildErrorReport(
+          "MESSAGE_SEND_FAILED",
+          error instanceof Error
+            ? error.message
+            : "Failed to send text message",
+          "session",
+          idInteraction,
+          {
+            sessionDuration: Math.floor(
+              (Date.now() - sessionStartTimeRef.current) / 1000,
+            ),
+            context: "Text message input",
+          },
+        ),
+      );
     } finally {
       setIsSending(false);
     }
@@ -270,7 +369,7 @@ const LiveAvatarSessionComponent: React.FC<{
               className="min-h-[44px] bg-red-500/80 hover:bg-red-600 text-white px-6 py-2 rounded-full backdrop-blur-md transition-all duration-200 font-medium shadow-lg touch-manipulation active:scale-95 text-base"
               onClick={async () => {
                 try {
-                  await fetch(
+                  await fetchWithTimeout(
                     "https://devwebhook.inteliventa.ai/webhook/liveavatar",
                     {
                       method: "POST",
@@ -281,9 +380,26 @@ const LiveAvatarSessionComponent: React.FC<{
                         tiempo_consumido: manualTimer,
                       }),
                     },
+                    10000,
                   );
-                } catch {
-                  console.error("Webhook error");
+                } catch (err) {
+                  console.error("Webhook error:", err);
+                  reportErrorToWebhook(
+                    buildErrorReport(
+                      "WEBHOOK_ERROR",
+                      err instanceof Error
+                        ? err.message
+                        : "End session webhook failed",
+                      "webhook",
+                      idInteraction,
+                      {
+                        sessionDuration: Math.floor(
+                          (Date.now() - sessionStartTimeRef.current) / 1000,
+                        ),
+                        context: "End session button (desktop)",
+                      },
+                    ),
+                  );
                 }
                 stopSession();
                 if (onSessionComplete) {
@@ -304,7 +420,7 @@ const LiveAvatarSessionComponent: React.FC<{
             className="w-full min-h-[48px] bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold shadow-lg touch-manipulation active:scale-[0.98] text-sm"
             onClick={async () => {
               try {
-                await fetch(
+                await fetchWithTimeout(
                   "https://devwebhook.inteliventa.ai/webhook/liveavatar",
                   {
                     method: "POST",
@@ -315,9 +431,26 @@ const LiveAvatarSessionComponent: React.FC<{
                       tiempo_consumido: manualTimer,
                     }),
                   },
+                  10000,
                 );
-              } catch {
-                console.error("Webhook error");
+              } catch (err) {
+                console.error("Webhook error:", err);
+                reportErrorToWebhook(
+                  buildErrorReport(
+                    "WEBHOOK_ERROR",
+                    err instanceof Error
+                      ? err.message
+                      : "End session webhook failed",
+                    "webhook",
+                    idInteraction,
+                    {
+                      sessionDuration: Math.floor(
+                        (Date.now() - sessionStartTimeRef.current) / 1000,
+                      ),
+                      context: "End session button (mobile)",
+                    },
+                  ),
+                );
               }
               stopSession();
               if (onSessionComplete) {
@@ -340,6 +473,13 @@ const LiveAvatarSessionComponent: React.FC<{
           </h2>
           <p className="text-gray-500 text-xs md:text-sm mt-1">{t.listening}</p>
         </div>
+
+        {/* Error Toast */}
+        {errorToast && (
+          <div className="mx-4 mt-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs md:text-sm animate-pulse">
+            {errorToast}
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3 md:space-y-4">
           {messages &&
@@ -393,12 +533,16 @@ const LiveAvatarSessionComponent: React.FC<{
               onChange={(e) => setTextInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={t.textInputPlaceholder}
-              disabled={isSending}
+              disabled={isSending || sessionState !== SessionState.CONNECTED}
               className="flex-1 min-h-[44px] px-4 py-2 bg-white border border-gray-200 rounded-full text-sm md:text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button
               onClick={handleSendTextMessage}
-              disabled={!textInput.trim() || isSending}
+              disabled={
+                !textInput.trim() ||
+                isSending ||
+                sessionState !== SessionState.CONNECTED
+              }
               className="min-h-[44px] min-w-[44px] md:px-5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all duration-200 font-medium shadow-md touch-manipulation active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 flex items-center justify-center gap-2"
             >
               {/* Send Icon */}
@@ -428,6 +572,7 @@ export const LiveAvatarSession: React.FC<{
   sessionAccessToken: string;
   onSessionStopped: () => void;
   onSessionComplete?: () => void;
+  onDisconnected?: () => void;
   idInteraction: string;
   initialTimerSeconds?: number | null;
   language: Language;
@@ -436,13 +581,14 @@ export const LiveAvatarSession: React.FC<{
   sessionAccessToken,
   onSessionStopped,
   onSessionComplete,
+  onDisconnected,
   idInteraction,
   initialTimerSeconds,
   language,
 }) => {
   return (
     <LiveAvatarContextProvider
-      key={sessionAccessToken} // Force remount/new session if token changes
+      key={sessionAccessToken}
       sessionAccessToken={sessionAccessToken}
       idInteraction={idInteraction}
       onSessionComplete={onSessionComplete}
@@ -452,6 +598,7 @@ export const LiveAvatarSession: React.FC<{
         mode={mode}
         onSessionStopped={onSessionStopped}
         onSessionComplete={onSessionComplete}
+        onDisconnected={onDisconnected}
         idInteraction={idInteraction}
         initialTimerSeconds={initialTimerSeconds}
         language={language}

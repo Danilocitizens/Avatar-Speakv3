@@ -17,6 +17,8 @@ import {
 } from "@heygen/liveavatar-web-sdk";
 import { LiveAvatarSessionMessage, MessageSender } from "./types";
 import { API_URL } from "../../app/api/secrets";
+import { fetchWithTimeout } from "../utils/fetchWithTimeout";
+import { reportErrorToWebhook, buildErrorReport } from "../utils/errorReporter";
 
 type LiveAvatarContextProps = {
   sessionRef: React.RefObject<LiveAvatarSession>;
@@ -289,25 +291,28 @@ const useChatHistoryState = (
 
           // Webhook logic
           try {
-            fetch("https://devwebhook.inteliventa.ai/webhook/liveavatar", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
+            fetchWithTimeout(
+              "https://devwebhook.inteliventa.ai/webhook/liveavatar",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  type: "USER_END_MESSAGE",
+                  text: data.text,
+                  avatar_text: avatarTranscriptBuffer.current,
+                  id_interaccion: idInteraction || "",
+                  timestamp: new Date().toISOString(),
+                }),
               },
-              body: JSON.stringify({
-                type: "USER_END_MESSAGE",
-                text: data.text,
-                avatar_text: avatarTranscriptBuffer.current,
-                id_interaccion: idInteraction || "",
-                timestamp: new Date().toISOString(),
-              }),
-            })
+              10000,
+            )
               .then(async (res) => {
                 try {
                   const data = await res.json();
                   if (data.respuesta === "ok") {
                     await session.stop();
-                    // Trigger completion callback to show End Screen
                     if (onSessionComplete) {
                       onSessionComplete();
                     }
@@ -317,7 +322,18 @@ const useChatHistoryState = (
                 }
               })
               .catch((err) => {
-                console.error("Webhook Send Error (Silenced):", err);
+                console.error("Webhook Send Error:", err);
+                reportErrorToWebhook(
+                  buildErrorReport(
+                    "WEBHOOK_ERROR",
+                    err instanceof Error
+                      ? err.message
+                      : "User transcription webhook failed",
+                    "webhook",
+                    idInteraction || "",
+                    { context: "USER_END_MESSAGE webhook" },
+                  ),
+                );
               });
           } catch (e) {
             console.error("Webhook Error:", e);

@@ -332,10 +332,27 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
   }
 
   private async connectWebSocket(websocketUrl: string): Promise<void> {
-    return new Promise((resolve, _reject) => {
+    return new Promise((resolve, reject) => {
+      const connectionTimeout = setTimeout(() => {
+        if (this._sessionEventSocket) {
+          this._sessionEventSocket.onopen = null;
+          this._sessionEventSocket.onerror = null;
+          this._sessionEventSocket.close();
+          this._sessionEventSocket = null;
+        }
+        reject(new Error("WebSocket connection timeout after 10s"));
+      }, 10000);
+
       this._sessionEventSocket = new WebSocket(websocketUrl);
+
       this._sessionEventSocket.onopen = () => {
+        clearTimeout(connectionTimeout);
         resolve();
+      };
+
+      this._sessionEventSocket.onerror = (error) => {
+        clearTimeout(connectionTimeout);
+        reject(error);
       };
     });
   }
@@ -409,6 +426,22 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
     }
 
     this._sessionEventSocket = null;
+
+    // If LiveKit room is still connected, keep session alive in degraded mode
+    // Messages will be sent via LiveKit data channel instead of WebSocket
+    if (this.room.state === "connected") {
+      console.warn(
+        "[SDK] WebSocket disconnected but LiveKit room still active. Continuing in degraded mode.",
+      );
+      this.emit(SessionEvent.SESSION_ERROR, {
+        code: "WEBSOCKET_DISCONNECTED",
+        message:
+          "WebSocket disconnected but session continues via LiveKit. Some features may be limited.",
+      });
+      return;
+    }
+
+    // Both connections are down - terminate session
     this.cleanup();
     this.postStop(SessionDisconnectReason.UNKNOWN_REASON);
   }
@@ -492,6 +525,10 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
       });
     } else {
       console.warn("No active connection to send command event");
+      this.emit(SessionEvent.SESSION_ERROR, {
+        code: "MESSAGE_SEND_FAILED",
+        message: "No active connection available to send message",
+      });
     }
   }
 
@@ -560,6 +597,24 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
           JSON.stringify({
             type: "agent.stop_listening",
             event_id: event_id,
+          }),
+        );
+        return;
+      case CommandEventsEnum.AVATAR_SPEAK_RESPONSE:
+        this._sessionEventSocket.send(
+          JSON.stringify({
+            type: "agent.speak_response",
+            event_id: event_id,
+            text: (commandEvent as CommandEvent & { text: string }).text,
+          }),
+        );
+        return;
+      case CommandEventsEnum.AVATAR_SPEAK_TEXT:
+        this._sessionEventSocket.send(
+          JSON.stringify({
+            type: "agent.speak",
+            event_id: event_id,
+            text: (commandEvent as CommandEvent & { text: string }).text,
           }),
         );
         return;

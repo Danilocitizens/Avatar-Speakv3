@@ -6,6 +6,7 @@ export enum SessionEvent {
   SESSION_STREAM_READY = "session.stream_ready",
   SESSION_CONNECTION_QUALITY_CHANGED = "session.connection_quality_changed",
   SESSION_DISCONNECTED = "session.disconnected",
+  SESSION_ERROR = "session.error",
 }
 
 export type SessionEventCallbacks = {
@@ -17,6 +18,10 @@ export type SessionEventCallbacks = {
   [SessionEvent.SESSION_DISCONNECTED]: (
     reason: SessionDisconnectReason,
   ) => void;
+  [SessionEvent.SESSION_ERROR]: (error: {
+    code: string;
+    message: string;
+  }) => void;
 };
 
 export enum AgentEventsEnum {
