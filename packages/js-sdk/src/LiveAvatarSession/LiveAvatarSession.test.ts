@@ -178,7 +178,7 @@ describe("LiveAvatarSession disconnect", () => {
     );
   });
 
-  it("disconnects the session when websocket is disconnected", async () => {
+  it("enters degraded mode when websocket is disconnected but room is active", async () => {
     mockWebSocket();
     const session = setupLiveAvatarSession({
       sessionInfo: { ...sessionInfoMock, ws_url: "mock-websocket-url" },
@@ -187,13 +187,39 @@ describe("LiveAvatarSession disconnect", () => {
     session.on(SessionEvent.SESSION_STATE_CHANGED, onStateChanged);
     const onDisconnected = vi.fn();
     session.on(SessionEvent.SESSION_DISCONNECTED, onDisconnected);
+    const onError = vi.fn();
+    session.on(SessionEvent.SESSION_ERROR, onError);
+
     await session.start();
     testContext.wsInstance._triggerClose({ code: 1000, reason: "test" });
-    expect(onStateChanged).toHaveBeenCalledTimes(3);
-    expect(onStateChanged).toHaveBeenNthCalledWith(
-      3,
-      SessionState.DISCONNECTED,
+
+    // Session should NOT be disconnected because room is still active
+    expect(onStateChanged).toHaveBeenCalledTimes(2); // Only CONNECTING and CONNECTED
+    expect(onDisconnected).not.toHaveBeenCalled();
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: "WEBSOCKET_DISCONNECTED",
+      }),
     );
+    expect(session.state).toBe(SessionState.CONNECTED);
+  });
+
+  it("disconnects the session completely when both socket and room are down", async () => {
+    mockWebSocket();
+    const session = setupLiveAvatarSession({
+      sessionInfo: { ...sessionInfoMock, ws_url: "mock-websocket-url" },
+    });
+    const onStateChanged = vi.fn();
+    session.on(SessionEvent.SESSION_STATE_CHANGED, onStateChanged);
+    const onDisconnected = vi.fn();
+    session.on(SessionEvent.SESSION_DISCONNECTED, onDisconnected);
+
+    await session.start();
+
+    // Simulate room disconnect (this triggers cleanup and postStop)
+    testContext.roomInstance._triggerDisconnected();
+
+    expect(session.state).toBe(SessionState.DISCONNECTED);
     expect(onDisconnected).toHaveBeenCalledWith(
       SessionDisconnectReason.UNKNOWN_REASON,
     );
@@ -323,14 +349,17 @@ describe("LiveAvatarSession command events", () => {
     expect(parsedLastEvent.type).toEqual("agent.speak_end");
   });
 
-  it("does not send unsopported command event via web socket", async () => {
+  it("sends speak response command event via web socket", async () => {
     mockWebSocket();
     const session = setupLiveAvatarSession({
       sessionInfo: { ...sessionInfoMock, ws_url: "mock-websocket-url" },
     });
     await session.start();
     session.message("test");
-    expect(testContext.wsInstance.send).not.toHaveBeenCalled();
+    const sendData = testContext.wsInstance.send.mock.calls[0][0];
+    const parsedSendData = JSON.parse(sendData);
+    expect(parsedSendData.type).toEqual("agent.speak_response");
+    expect(parsedSendData.text).toEqual("test");
   });
 
   it("does not send command event when the session is not started", async () => {
