@@ -43,7 +43,17 @@ export function buildErrorReport(
   };
 }
 
+const recentlySentErrors = new Map<string, number>();
+const ERROR_REPORT_COOLDOWN_MS = 30_000;
+
 export async function reportErrorToWebhook(report: ErrorReport): Promise<void> {
+  const now = Date.now();
+  const lastSent = recentlySentErrors.get(report.error_code);
+  if (lastSent && now - lastSent < ERROR_REPORT_COOLDOWN_MS) {
+    return;
+  }
+  recentlySentErrors.set(report.error_code, now);
+
   try {
     await fetchWithTimeout(
       WEBHOOK_URL,

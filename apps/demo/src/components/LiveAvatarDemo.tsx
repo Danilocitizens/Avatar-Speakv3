@@ -22,6 +22,9 @@ const LiveAvatarDemoContent = () => {
   const [isReconnecting, setIsReconnecting] = useState(false);
   const [reconnectAttempt, setReconnectAttempt] = useState(0);
   const MAX_RECONNECT_ATTEMPTS = 3;
+  const MAX_RECONNECT_CYCLES = 2;
+  const reconnectCycleCountRef = useRef(0);
+  const lastSessionStartTimeRef = useRef<number>(0);
   const t = translations[currentLanguage];
 
   // Store last session params for reconnection
@@ -122,6 +125,7 @@ const LiveAvatarDemoContent = () => {
   const handleStart = async () => {
     setIsStarting(true);
     setError(null);
+    reconnectCycleCountRef.current = 0;
     try {
       // Webhook Validation
       const webhookResponse = await fetchWithTimeout(
@@ -202,6 +206,7 @@ const LiveAvatarDemoContent = () => {
       }
 
       setTimerSeconds(parsedTimer);
+      lastSessionStartTimeRef.current = Date.now();
       setSessionToken(session_token);
       setMode("FULL");
 
@@ -226,6 +231,40 @@ const LiveAvatarDemoContent = () => {
   const handleDisconnected = useCallback(async () => {
     if (!lastSessionParamsRef.current || isReconnecting) return;
 
+    // Global cycle limit: stop if we've exhausted all cycles
+    if (reconnectCycleCountRef.current >= MAX_RECONNECT_CYCLES) {
+      setIsStarting(false);
+      setError(t.reconnectFailed || "Could not reconnect. Please try again.");
+      lastSessionParamsRef.current = null;
+      return;
+    }
+
+    // Fast-disconnect detection: if last session lived < 10s, the problem is persistent
+    const timeSinceLastSession = Date.now() - lastSessionStartTimeRef.current;
+    const MIN_SESSION_DURATION_MS = 10_000;
+
+    if (
+      lastSessionStartTimeRef.current > 0 &&
+      timeSinceLastSession < MIN_SESSION_DURATION_MS
+    ) {
+      setIsStarting(false);
+      setError(t.reconnectFailed || "Could not reconnect. Please try again.");
+      lastSessionParamsRef.current = null;
+      reportErrorToWebhook(
+        buildErrorReport(
+          "RECONNECT_ABORTED_FAST_DISCONNECT",
+          `Session disconnected after ${Math.floor(timeSinceLastSession / 1000)}s`,
+          "connection",
+          idInteraction || "",
+          {
+            context: `Fast disconnect (${timeSinceLastSession}ms < ${MIN_SESSION_DURATION_MS}ms)`,
+          },
+        ),
+      );
+      return;
+    }
+
+    reconnectCycleCountRef.current += 1;
     setIsReconnecting(true);
     setSessionToken(""); // Unmount current session
 
@@ -241,6 +280,7 @@ const LiveAvatarDemoContent = () => {
           lastSessionParamsRef.current!,
         );
 
+        lastSessionStartTimeRef.current = Date.now();
         setSessionToken(newToken);
         setIsReconnecting(false);
         setReconnectAttempt(0);
@@ -248,11 +288,11 @@ const LiveAvatarDemoContent = () => {
         reportErrorToWebhook(
           buildErrorReport(
             "RECONNECT_SUCCESS",
-            `Reconnected on attempt ${attempt}`,
+            `Reconnected on attempt ${attempt} (cycle ${reconnectCycleCountRef.current})`,
             "connection",
             idInteraction || "",
             {
-              context: `Reconnection attempt ${attempt} of ${MAX_RECONNECT_ATTEMPTS}`,
+              context: `Reconnection attempt ${attempt} of ${MAX_RECONNECT_ATTEMPTS}, cycle ${reconnectCycleCountRef.current} of ${MAX_RECONNECT_CYCLES}`,
             },
           ),
         );
@@ -262,7 +302,7 @@ const LiveAvatarDemoContent = () => {
       }
     }
 
-    // All attempts failed
+    // All attempts in this cycle failed
     setIsReconnecting(false);
     setReconnectAttempt(0);
     setIsStarting(false);
@@ -271,7 +311,7 @@ const LiveAvatarDemoContent = () => {
     reportErrorToWebhook(
       buildErrorReport(
         "RECONNECT_FAILED",
-        `All ${MAX_RECONNECT_ATTEMPTS} reconnection attempts failed`,
+        `All ${MAX_RECONNECT_ATTEMPTS} reconnection attempts failed (cycle ${reconnectCycleCountRef.current})`,
         "connection",
         idInteraction || "",
         { context: "Auto-reconnection exhausted" },
@@ -285,15 +325,16 @@ const LiveAvatarDemoContent = () => {
   ]);
 
   const onSessionStopped = () => {
-    // Reset the FE state
+    lastSessionParamsRef.current = null;
     setSessionToken("");
     setIsStarting(false);
     setShowNoExerciseScreen(false);
   };
 
   const onSessionComplete = () => {
+    lastSessionParamsRef.current = null;
     setShowEndScreen(true);
-    setSessionToken(""); // Stop showing session
+    setSessionToken("");
     setIsStarting(false);
   };
 
