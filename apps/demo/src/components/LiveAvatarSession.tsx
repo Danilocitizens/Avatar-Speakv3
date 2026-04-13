@@ -138,9 +138,25 @@ const LiveAvatarSessionComponent: React.FC<{
 
   useEffect(() => {
     if (sessionState === SessionState.INACTIVE) {
-      startSession().catch(console.error);
+      startSession().catch((err) => {
+        console.error("Session start failed:", err);
+        const httpStatus = err?.status ?? null;
+        const errorMessage = err?.message || "Unknown session start error";
+        reportErrorToWebhook(
+          buildErrorReport(
+            "SESSION_START_FAILED",
+            errorMessage,
+            "session",
+            idInteraction,
+            {
+              httpStatus,
+              context: `HeyGen API rejected session start${httpStatus ? ` (HTTP ${httpStatus})` : ""}`,
+            },
+          ),
+        );
+      });
     }
-  }, [startSession, sessionState]);
+  }, [startSession, sessionState, idInteraction]);
 
   useEffect(() => {
     if (isStreamReady && !isActive) {
