@@ -261,7 +261,6 @@ describe("LiveAvatarSession keepAlive", () => {
         Authorization: "Bearer mock-session-token",
         "Content-Type": "application/json",
       },
-      credentials: "include",
     });
   });
 });
@@ -512,7 +511,6 @@ describe("LiveAvatarSession stop", () => {
         Authorization: "Bearer mock-session-token",
         "Content-Type": "application/json",
       },
-      credentials: "include",
     });
   });
 });

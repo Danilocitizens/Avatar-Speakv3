@@ -31,7 +31,6 @@ export class SessionAPIClient {
     try {
       const response = await fetch(`${this.apiUrl}${path}`, {
         ...params,
-        credentials: "include",
         headers: {
           Authorization: `Bearer ${this.sessionToken}`,
           "Content-Type": "application/json",
@@ -41,6 +40,11 @@ export class SessionAPIClient {
 
       if (!response.ok) {
         const data = await response.json();
+        console.error("[SessionApiClient] API Error:", {
+          status: response.status,
+          url: `${this.apiUrl}${path}`,
+          response: data,
+        });
         throw new SessionApiError(
           data.data?.message ||
             `API request failed with status ${response.status}`,
