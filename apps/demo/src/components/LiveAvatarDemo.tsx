@@ -33,6 +33,7 @@ const LiveAvatarDemoContent = () => {
     avatar_id: string;
     voice_id: string;
     language: string;
+    proveedor: string;
   } | null>(null);
 
   // Automatic webhook trigger on page load (Requested feature)
@@ -102,6 +103,7 @@ const LiveAvatarDemoContent = () => {
       avatar_id: string;
       voice_id: string;
       language: string;
+      proveedor: string;
     }): Promise<string> => {
       const res = await fetchWithTimeout(
         "/api/start-session",
@@ -186,6 +188,7 @@ const LiveAvatarDemoContent = () => {
         avatar_id: webhookData.avatar_id,
         voice_id: webhookData.voice_id,
         language: webhookData.language,
+        proveedor: (webhookData.proveedor || "heygen").toString().toLowerCase(),
       };
 
       // Store params for reconnection

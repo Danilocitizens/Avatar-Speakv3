@@ -1,16 +1,28 @@
-import { API_KEY, API_URL } from "../secrets";
+import {
+  API_KEY,
+  API_URL,
+  ELEVENLABS_MODEL_ID,
+  ELEVENLABS_SPEED,
+  ELEVENLABS_STABILITY,
+  ELEVENLABS_SIMILARITY_BOOST,
+  ELEVENLABS_STYLE,
+  ELEVENLABS_USE_SPEAKER_BOOST,
+} from "../secrets";
 
 export async function POST(request: Request) {
   let session_token = "";
   let session_id = "";
   try {
     const body = await request.json().catch(() => ({}));
-    const { knowledge_id, avatar_id, voice_id, language } = body;
+    const { knowledge_id, avatar_id, voice_id, language, proveedor } = body;
+    const provider = (proveedor || "heygen").toString().toLowerCase();
+
     console.warn("Start Session Params:", {
       knowledge_id,
       avatar_id,
       voice_id,
       language,
+      provider,
     });
 
     if (!knowledge_id || !avatar_id || !voice_id) {
@@ -19,21 +31,45 @@ export async function POST(request: Request) {
       );
     }
 
+    const baseAvatarPersona = {
+      voice_id: voice_id,
+      context_id: knowledge_id,
+      language: language,
+    };
+
+    const payload =
+      provider === "elevenlabs"
+        ? {
+            mode: "FULL",
+            avatar_id: avatar_id,
+            avatar_persona: {
+              ...baseAvatarPersona,
+              stt_config: { provider: "deepgram" },
+              voice_settings: {
+                provider: "elevenLabs",
+                speed: ELEVENLABS_SPEED,
+                stability: ELEVENLABS_STABILITY,
+                similarity_boost: ELEVENLABS_SIMILARITY_BOOST,
+                style: ELEVENLABS_STYLE,
+                use_speaker_boost: ELEVENLABS_USE_SPEAKER_BOOST,
+                model: ELEVENLABS_MODEL_ID,
+              },
+            },
+            interactivity_type: "CONVERSATIONAL",
+          }
+        : {
+            mode: "FULL",
+            avatar_id: avatar_id,
+            avatar_persona: baseAvatarPersona,
+          };
+
     const res = await fetch(`${API_URL}/v1/sessions/token`, {
       method: "POST",
       headers: {
         "X-API-KEY": API_KEY,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        mode: "FULL",
-        avatar_id: avatar_id,
-        avatar_persona: {
-          voice_id: voice_id,
-          context_id: knowledge_id,
-          language: language,
-        },
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
