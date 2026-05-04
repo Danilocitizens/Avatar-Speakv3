@@ -1,13 +1,4 @@
-import {
-  API_KEY,
-  API_URL,
-  ELEVENLABS_MODEL_ID,
-  ELEVENLABS_SPEED,
-  ELEVENLABS_STABILITY,
-  ELEVENLABS_SIMILARITY_BOOST,
-  ELEVENLABS_STYLE,
-  ELEVENLABS_USE_SPEAKER_BOOST,
-} from "../secrets";
+import { API_KEY, API_URL } from "../secrets";
 
 export async function POST(request: Request) {
   let session_token = "";
@@ -63,16 +54,6 @@ export async function POST(request: Request) {
             avatar_id: avatar_id,
             avatar_persona: baseAvatarPersona,
           };
-
-    // Estas envs ya no se envían (el binding del voice_id third-party las
-    // hace innecesarias). Se mantienen importadas por si en el futuro se
-    // expone otro modo que sí las requiera.
-    void ELEVENLABS_MODEL_ID;
-    void ELEVENLABS_SPEED;
-    void ELEVENLABS_STABILITY;
-    void ELEVENLABS_SIMILARITY_BOOST;
-    void ELEVENLABS_STYLE;
-    void ELEVENLABS_USE_SPEAKER_BOOST;
 
     console.warn("[start-session] POSTing to /v1/sessions/token", {
       url: `${API_URL}/v1/sessions/token`,
