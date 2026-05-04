@@ -33,7 +33,7 @@ const LiveAvatarDemoContent = () => {
     avatar_id: string;
     voice_id: string;
     language: string;
-    proveedor: string;
+    prov: string;
   } | null>(null);
 
   // Automatic webhook trigger on page load (Requested feature)
@@ -103,7 +103,7 @@ const LiveAvatarDemoContent = () => {
       avatar_id: string;
       voice_id: string;
       language: string;
-      proveedor: string;
+      prov: string;
     }): Promise<string> => {
       const res = await fetchWithTimeout(
         "/api/start-session",
@@ -183,12 +183,13 @@ const LiveAvatarDemoContent = () => {
         return;
       }
 
+      // n8n webhook devuelve `prov` con valores "elabs" | "heygen".
       const sessionParams = {
         knowledge_id: dynamicKnowledgeId,
         avatar_id: webhookData.avatar_id,
         voice_id: webhookData.voice_id,
         language: webhookData.language,
-        proveedor: (webhookData.proveedor || "heygen").toString().toLowerCase(),
+        prov: (webhookData.prov || "heygen").toString().toLowerCase(),
       };
 
       // Store params for reconnection
