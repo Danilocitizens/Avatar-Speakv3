@@ -1,4 +1,13 @@
-export type Language = "es" | "pt" | "fr" | "de" | "en" | "it";
+export type Language =
+  | "es"
+  | "pt"
+  | "fr"
+  | "de"
+  | "en"
+  | "it"
+  | "pl"
+  | "no"
+  | "nl";
 
 export const translations: Record<Language, Record<string, string>> = {
   es: {
@@ -164,5 +173,88 @@ export const translations: Record<Language, Record<string, string>> = {
     reconnectOf: "di",
     reconnectFailed: "Impossibile riconnettersi. Riprova.",
     retry: "Riprova",
+  },
+  pl: {
+    title: "TRENER AI",
+    startConnection: "Rozpocznij ćwiczenie",
+    starting: "Rozpoczynanie sesji...",
+    loading: "Ładowanie...",
+    thankYou: "Dziękujemy. Teraz wróć do WhatsApp, aby kontynuować",
+    noExerciseTitle: "Nie masz jeszcze ćwiczenia",
+    returnToWhatsapp: "Możesz wrócić do WhatsApp, aby kontynuować",
+    sessionEnded: "Sesja zakończona",
+    connectionLost:
+      "Połączenie zostało utracone lub nie udało się go nawiązać.",
+    returnHome: "Powrót do strony głównej",
+    endSession: "Zakończ ćwiczenie",
+    liveTranscription: "Transkrypcja na żywo",
+    listening: "Słucham...",
+    you: "Ty",
+    avatar: "Avatar",
+    conversationPlaceholder: "Rozmowa pojawi się tutaj",
+    genericError: "Błąd logowania",
+    textInputPlaceholder: "Wpisz swoją wiadomość...",
+    sendMessage: "Wyślij",
+    messageFailed: "Nie udało się wysłać wiadomości",
+    reconnecting: "Ponowne łączenie...",
+    reconnectAttempt: "Próba",
+    reconnectOf: "z",
+    reconnectFailed: "Nie udało się ponownie połączyć. Spróbuj ponownie.",
+    retry: "Spróbuj ponownie",
+  },
+  no: {
+    title: "AI-TRENER",
+    startConnection: "Start øvelse",
+    starting: "Starter økt...",
+    loading: "Laster...",
+    thankYou: "Takk. Gå tilbake til WhatsApp for å fortsette",
+    noExerciseTitle: "Du har ingen øvelse ennå",
+    returnToWhatsapp: "Du kan gå tilbake til WhatsApp for å fortsette",
+    sessionEnded: "Økt avsluttet",
+    connectionLost: "Tilkoblingen ble brutt eller kunne ikke opprettes.",
+    returnHome: "Tilbake til start",
+    endSession: "Avslutt øvelse",
+    liveTranscription: "Direktetranskripsjon",
+    listening: "Lytter...",
+    you: "Du",
+    avatar: "Avatar",
+    conversationPlaceholder: "Samtalen vises her",
+    genericError: "Feil ved innlogging",
+    textInputPlaceholder: "Skriv meldingen din...",
+    sendMessage: "Send",
+    messageFailed: "Kunne ikke sende meldingen",
+    reconnecting: "Kobler til igjen...",
+    reconnectAttempt: "Forsøk",
+    reconnectOf: "av",
+    reconnectFailed: "Kunne ikke koble til igjen. Prøv på nytt.",
+    retry: "Prøv igjen",
+  },
+  nl: {
+    title: "AI-TRAINER",
+    startConnection: "Oefening starten",
+    starting: "Sessie starten...",
+    loading: "Laden...",
+    thankYou: "Bedankt. Ga nu terug naar WhatsApp om door te gaan",
+    noExerciseTitle: "Je hebt nog geen oefening",
+    returnToWhatsapp: "Je kunt teruggaan naar WhatsApp om door te gaan",
+    sessionEnded: "Sessie beëindigd",
+    connectionLost:
+      "De verbinding is verbroken of kon niet tot stand worden gebracht.",
+    returnHome: "Terug naar startpagina",
+    endSession: "Oefening beëindigen",
+    liveTranscription: "Live transcriptie",
+    listening: "Luisteren...",
+    you: "Jij",
+    avatar: "Avatar",
+    conversationPlaceholder: "Het gesprek verschijnt hier",
+    genericError: "Fout bij inloggen",
+    textInputPlaceholder: "Typ je bericht...",
+    sendMessage: "Verzenden",
+    messageFailed: "Bericht kon niet worden verzonden",
+    reconnecting: "Opnieuw verbinden...",
+    reconnectAttempt: "Poging",
+    reconnectOf: "van",
+    reconnectFailed: "Kan niet opnieuw verbinden. Probeer het opnieuw.",
+    retry: "Opnieuw proberen",
   },
 };

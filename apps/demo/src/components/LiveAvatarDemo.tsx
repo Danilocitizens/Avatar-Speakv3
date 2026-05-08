@@ -72,6 +72,12 @@ const LiveAvatarDemoContent = () => {
             setCurrentLanguage("en");
           } else if (lang.includes("italiano")) {
             setCurrentLanguage("it");
+          } else if (lang.includes("polaco")) {
+            setCurrentLanguage("pl");
+          } else if (lang.includes("noruego")) {
+            setCurrentLanguage("no");
+          } else if (lang.includes("holandés") || lang.includes("holandes")) {
+            setCurrentLanguage("nl");
           } else {
             setCurrentLanguage("es"); // Default
           }
