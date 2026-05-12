@@ -29,11 +29,9 @@ const LiveAvatarDemoContent = () => {
 
   // Store last session params for reconnection
   const lastSessionParamsRef = useRef<{
-    knowledge_id: string;
     avatar_id: string;
-    voice_id: string;
-    language: string;
-    prov: string;
+    agent_id: string;
+    secret_id: string;
   } | null>(null);
 
   // Automatic webhook trigger on page load (Requested feature)
@@ -105,11 +103,9 @@ const LiveAvatarDemoContent = () => {
   // Helper to create a session from stored params (used by both handleStart and reconnection)
   const createSessionFromParams = useCallback(
     async (params: {
-      knowledge_id: string;
       avatar_id: string;
-      voice_id: string;
-      language: string;
-      prov: string;
+      agent_id: string;
+      secret_id: string;
     }): Promise<string> => {
       const res = await fetchWithTimeout(
         "/api/start-session",
@@ -173,29 +169,19 @@ const LiveAvatarDemoContent = () => {
         return;
       }
 
-      let dynamicKnowledgeId = null;
-      if (webhookData.respuesta === "disponible" && webhookData.CONTEXT_ID) {
-        dynamicKnowledgeId = webhookData.CONTEXT_ID;
-      } else if (webhookData.knowledge_id) {
-        dynamicKnowledgeId = webhookData.knowledge_id;
-      }
-
-      if (!dynamicKnowledgeId) {
+      if (!webhookData.agent_id) {
         console.warn(
-          "No CONTEXT_ID provided by webhook. Showing No Exercise screen.",
+          "No agent_id provided by webhook. Showing No Exercise screen.",
         );
         setShowNoExerciseScreen(true);
         setIsStarting(false);
         return;
       }
 
-      // n8n webhook devuelve `prov` con valores "elabs" | "heygen".
       const sessionParams = {
-        knowledge_id: dynamicKnowledgeId,
         avatar_id: webhookData.avatar_id,
-        voice_id: webhookData.voice_id,
-        language: webhookData.language,
-        prov: (webhookData.prov || "heygen").toString().toLowerCase(),
+        agent_id: webhookData.agent_id,
+        secret_id: webhookData.secret_id,
       };
 
       // Store params for reconnection

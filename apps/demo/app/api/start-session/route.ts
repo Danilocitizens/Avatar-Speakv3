@@ -5,55 +5,35 @@ export async function POST(request: Request) {
   let session_id = "";
   try {
     const body = await request.json().catch(() => ({}));
-    // `prov` es un campo INTERNO de nuestro flujo (viene del webhook n8n).
-    // Valores: "elabs" | "heygen". Solo decide qué payload construimos
-    // localmente. NO se envía nunca a LiveAvatar — el provider real ya
-    // está bindeado en el recurso voice_id.
-    const { knowledge_id, avatar_id, voice_id, language, prov } = body;
-    const provInternal = (prov || "heygen").toString().toLowerCase();
+    const { avatar_id, agent_id, secret_id } = body;
 
-    console.warn("[start-session] Webhook params (internal):", {
-      knowledge_id,
+    console.warn("[start-session] Webhook params:", {
       avatar_id,
-      voice_id,
-      language,
-      prov_internal: provInternal,
+      agent_id,
+      secret_id,
     });
 
-    if (!knowledge_id || !avatar_id || !voice_id) {
-      throw new Error(
-        "Missing required params (knowledge_id, avatar_id, voice_id). Webhook must provide them.",
+    if (!avatar_id || !agent_id || !secret_id) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Missing required params (avatar_id, agent_id, secret_id). Webhook must provide them.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
-    // El `prov` que viene de n8n diferencia el camino:
-    //   - "heygen": voice nativo de HeyGen → payload mínimo, sin stt_config externo
-    //   - "elabs": voice_id importado vía /v1/voices/third_party → el
-    //     binding (provider + secret + provider_voice_id) ya vive en el recurso,
-    //     por eso NO se debe mandar voice_settings encima (rompe la pipeline:
-    //     "Errors validating session token" / 400 silencioso).
-    const baseAvatarPersona = {
-      voice_id: voice_id,
-      context_id: knowledge_id,
-      language: language,
+    const payload = {
+      mode: "LITE",
+      avatar_id: avatar_id,
+      elevenlabs_agent_config: {
+        secret_id: secret_id,
+        agent_id: agent_id,
+      },
     };
-
-    const payload =
-      provInternal === "elabs"
-        ? {
-            mode: "FULL",
-            avatar_id: avatar_id,
-            avatar_persona: {
-              ...baseAvatarPersona,
-              stt_config: { provider: "deepgram" },
-            },
-            interactivity_type: "CONVERSATIONAL",
-          }
-        : {
-            mode: "FULL",
-            avatar_id: avatar_id,
-            avatar_persona: baseAvatarPersona,
-          };
 
     console.warn("[start-session] POSTing to /v1/sessions/token", {
       url: `${API_URL}/v1/sessions/token`,
