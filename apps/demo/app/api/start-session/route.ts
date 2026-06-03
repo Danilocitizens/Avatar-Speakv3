@@ -63,16 +63,25 @@ export async function POST(request: Request) {
         rawBody: rawTokenBody,
       });
       let errorMessage = "Failed to retrieve session token";
+      let heygenCode: number | undefined;
       try {
         const resp = JSON.parse(rawTokenBody);
         errorMessage = resp.data?.[0]?.message || resp.message || errorMessage;
+        heygenCode = resp.code;
       } catch {
         errorMessage = rawTokenBody || errorMessage;
       }
-      return new Response(JSON.stringify({ error: errorMessage }), {
-        status: res.status,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          error: errorMessage,
+          heygen_code: heygenCode,
+          heygen_request_id: tokenHeaderSnapshot["x-request-id"],
+        }),
+        {
+          status: res.status,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     let data: any;

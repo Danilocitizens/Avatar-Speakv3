@@ -118,7 +118,13 @@ const LiveAvatarDemoContent = () => {
       );
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to retrieve session token");
+        const err = new Error(
+          errorData.error || "Failed to retrieve session token",
+        );
+        (err as any).httpStatus = res.status;
+        (err as any).heygenCode = errorData.heygen_code;
+        (err as any).heygenRequestId = errorData.heygen_request_id;
+        throw err;
       }
       const { session_token } = await res.json();
       return session_token;
@@ -211,13 +217,24 @@ const LiveAvatarDemoContent = () => {
       console.error("handleStart error:", error);
       setError(error.message || t.genericError);
       setIsStarting(false);
+
+      const httpStatus = error.httpStatus ?? error.status ?? null;
+      let errorContext = "handleStart";
+      if (httpStatus) errorContext += ` | HTTP ${httpStatus}`;
+      if (error.heygenCode) errorContext += ` | Code: ${error.heygenCode}`;
+      if (error.heygenRequestId)
+        errorContext += ` | ReqID: ${error.heygenRequestId}`;
+
       reportErrorToWebhook(
         buildErrorReport(
           "SESSION_START_FAILED",
           error.message || "Unknown error during session start",
           "session",
           idInteraction || "",
-          { context: "handleStart" },
+          {
+            httpStatus,
+            context: errorContext,
+          },
         ),
       );
     }

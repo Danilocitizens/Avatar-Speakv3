@@ -142,6 +142,11 @@ const LiveAvatarSessionComponent: React.FC<{
         console.error("Session start failed:", err);
         const httpStatus = err?.status ?? null;
         const errorMessage = err?.message || "Unknown session start error";
+
+        let errorContext = `HeyGen API rejected session start`;
+        if (httpStatus) errorContext += ` (HTTP ${httpStatus})`;
+        if (err?.errorCode) errorContext += ` | Code: ${err.errorCode}`;
+
         reportErrorToWebhook(
           buildErrorReport(
             "SESSION_START_FAILED",
@@ -150,7 +155,7 @@ const LiveAvatarSessionComponent: React.FC<{
             idInteraction,
             {
               httpStatus,
-              context: `HeyGen API rejected session start${httpStatus ? ` (HTTP ${httpStatus})` : ""}`,
+              context: errorContext,
             },
           ),
         );

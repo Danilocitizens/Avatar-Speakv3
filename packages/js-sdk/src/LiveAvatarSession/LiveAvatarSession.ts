@@ -327,7 +327,7 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
 
     this.room.on(RoomEvent.Disconnected, (reason) => {
       console.warn("[SDK] RoomEvent.Disconnected received:", reason);
-      this.handleRoomDisconnect();
+      this.handleRoomDisconnect(reason);
     });
   }
 
@@ -505,7 +505,16 @@ export class LiveAvatarSession extends (EventEmitter as new () => TypedEmitter<
     this.emit(SessionEvent.SESSION_DISCONNECTED, reason);
   }
 
-  private handleRoomDisconnect(): void {
+  private handleRoomDisconnect(
+    reason?: import("livekit-client").DisconnectReason,
+  ): void {
+    if (reason && reason !== 1 /* CLIENT_INITIATED enum is 1 */) {
+      console.warn(`[SDK] Abnormal room disconnect. Reason code: ${reason}`);
+      this.emit(SessionEvent.SESSION_ERROR, {
+        code: `LIVEKIT_DISCONNECT_${reason}`,
+        message: `LiveKit disconnected with reason code: ${reason}`,
+      });
+    }
     this.cleanup();
     this.postStop(SessionDisconnectReason.UNKNOWN_REASON);
   }
