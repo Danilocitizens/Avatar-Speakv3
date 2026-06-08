@@ -27,6 +27,14 @@ const LiveAvatarDemoContent = () => {
   const lastSessionStartTimeRef = useRef<number>(0);
   const t = translations[currentLanguage];
 
+  // modo_n8n: when "activo", session is created externally by n8n
+  const [isModoN8n, setIsModoN8n] = useState(false);
+  const [isWaitingN8nSession, setIsWaitingN8nSession] = useState(false);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const POLL_INTERVAL_MS = 2000;
+  const POLL_TIMEOUT_MS = 120000; // 2 minutes max wait
+  const pollStartTimeRef = useRef<number>(0);
+
   // Store last session params for reconnection
   const lastSessionParamsRef = useRef<{
     avatar_id: string;
@@ -132,6 +140,85 @@ const LiveAvatarDemoContent = () => {
     [],
   );
 
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, []);
+
+  // Start polling for n8n session token
+  const startPollingForN8nSession = useCallback(() => {
+    if (pollingIntervalRef.current) return; // Already polling
+
+    setIsWaitingN8nSession(true);
+    pollStartTimeRef.current = Date.now();
+    console.warn("[modo_n8n] Starting to poll for session token...");
+
+    pollingIntervalRef.current = setInterval(async () => {
+      // Check timeout
+      if (Date.now() - pollStartTimeRef.current > POLL_TIMEOUT_MS) {
+        console.warn("[modo_n8n] Polling timeout reached.");
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+          pollingIntervalRef.current = null;
+        }
+        setIsWaitingN8nSession(false);
+        setIsStarting(false);
+        setError("Tiempo de espera agotado. n8n no envió la sesión.");
+        reportErrorToWebhook(
+          buildErrorReport(
+            "N8N_SESSION_TIMEOUT",
+            "Polling timeout: n8n did not provide session token",
+            "session",
+            idInteraction || "",
+            { context: "modo_n8n polling timeout" },
+          ),
+        );
+        return;
+      }
+
+      try {
+        const res = await fetchWithTimeout(
+          `/api/n8n/poll-session?id=${encodeURIComponent(idInteraction || "")}`,
+          { method: "GET" },
+          5000,
+        );
+        const data = await res.json();
+
+        if (data.status === "ready" && data.session_token) {
+          console.warn("[modo_n8n] Session token received from n8n!");
+
+          // Stop polling
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+          setIsWaitingN8nSession(false);
+
+          // Parse inicio_seg from n8n if provided
+          if (data.inicio_seg) {
+            const parsed = parseInt(data.inicio_seg, 10);
+            if (!isNaN(parsed)) {
+              setTimerSeconds(parsed);
+            }
+          }
+
+          lastSessionStartTimeRef.current = Date.now();
+          setSessionToken(data.session_token);
+          setMode("FULL");
+        }
+        // If status is "pending", just keep polling
+      } catch (err) {
+        console.error("[modo_n8n] Polling error:", err);
+        // Don't stop polling on transient errors, just log
+      }
+    }, POLL_INTERVAL_MS);
+  }, [idInteraction]);
+
   const handleStart = async () => {
     setIsStarting(true);
     setError(null);
@@ -183,6 +270,21 @@ const LiveAvatarDemoContent = () => {
         setIsStarting(false);
         return;
       }
+
+      // ============================================
+      // modo_n8n: Skip session creation, wait for n8n
+      // ============================================
+      const modoN8n = webhookData.modo_n8n;
+      if (modoN8n && modoN8n.toLowerCase().trim() === "activo") {
+        console.warn(
+          "[modo_n8n] Detected modo_n8n=activo. Skipping session creation.",
+        );
+        setIsModoN8n(true);
+        // Do NOT create session — n8n will do it and send us the token
+        startPollingForN8nSession();
+        return;
+      }
+      // ============================================
 
       const sessionParams = {
         avatar_id: webhookData.avatar_id,
@@ -242,6 +344,18 @@ const LiveAvatarDemoContent = () => {
 
   // Reconnection handler - called when session disconnects unexpectedly
   const handleDisconnected = useCallback(async () => {
+    // In modo_n8n, do NOT auto-reconnect (n8n manages sessions)
+    if (isModoN8n) {
+      console.warn(
+        "[modo_n8n] Session disconnected. Reconnection disabled in modo_n8n.",
+      );
+      setIsStarting(false);
+      setError(
+        "Sesión desconectada. En modo n8n, la reconexión es gestionada externamente.",
+      );
+      return;
+    }
+
     if (!lastSessionParamsRef.current || isReconnecting) return;
 
     // Global cycle limit: stop if we've exhausted all cycles
@@ -332,6 +446,7 @@ const LiveAvatarDemoContent = () => {
     );
   }, [
     isReconnecting,
+    isModoN8n,
     idInteraction,
     createSessionFromParams,
     t.reconnectFailed,
@@ -363,7 +478,22 @@ const LiveAvatarDemoContent = () => {
         <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4 md:px-8">
           {/* Card Container */}
           <div className="w-full rounded-2xl p-6 md:p-12 flex flex-col items-center justify-center gap-6 md:gap-8">
-            {isReconnecting ? (
+            {isWaitingN8nSession ? (
+              <>
+                {/* Waiting for n8n session UI */}
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+                  <h2 className="text-lg md:text-xl font-bold text-gray-900">
+                    Esperando sesión...
+                  </h2>
+                  <p className="text-gray-500 text-sm md:text-base text-center">
+                    La sesión está siendo configurada desde n8n.
+                    <br />
+                    Por favor espere...
+                  </p>
+                </div>
+              </>
+            ) : isReconnecting ? (
               <>
                 {/* Reconnection UI */}
                 <div className="flex flex-col items-center gap-4">
